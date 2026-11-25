@@ -966,6 +966,120 @@
         "Plug & Play (Windows/Mac/Linux)",
         "Overcurrent Protection"
       ]
+    },
+    {
+      "id": "prod_44",
+      "name": "FlexStep Ultralight Gym & Walking Shoes",
+      "categoryId": "cat_fashion",
+      "categoryName": "Fashion & Apparel",
+      "price": 349,
+      "stock": 95,
+      "rating": 4.8,
+      "reviewCount": 114,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80",
+      "description": "Vibrant lightweight athletic running shoes with breathable mesh upper, cushioned shock-absorbing EVA midsole, and high-traction rubber outsole.",
+      "specs": [
+        "Breathable Flyknit Mesh",
+        "Ultra-Light 280g Weight",
+        "Anti-Skid Flex Outsole",
+        "Shock-Absorbing Insole"
+      ]
+    },
+    {
+      "id": "prod_45",
+      "name": "UrbanPace Breathable Knit Slip-On Sneakers",
+      "categoryId": "cat_fashion",
+      "categoryName": "Fashion & Apparel",
+      "price": 369,
+      "stock": 80,
+      "rating": 4.7,
+      "reviewCount": 78,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=800&q=80",
+      "description": "Contemporary slip-on casual sneakers engineered with memory foam insoles, elastic sock collars for easy on-off, and all-day street walking comfort.",
+      "specs": [
+        "Memory Foam Cushioned Sole",
+        "Stretch Elastic Collar",
+        "Machine Washable",
+        "Durable Rubber Tread"
+      ]
+    },
+    {
+      "id": "prod_46",
+      "name": "AirCushion Athletic Running Shoes with Anti-Slip Grip",
+      "categoryId": "cat_fashion",
+      "categoryName": "Fashion & Apparel",
+      "price": 389,
+      "stock": 70,
+      "rating": 4.8,
+      "reviewCount": 92,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=800&q=80",
+      "description": "Pro athletic running shoes with visible heel air cushioning, reinforced toe bumper, and sweat-wicking lining for morning runs and workouts.",
+      "specs": [
+        "Heel Air Cushion Unit",
+        "Reinforced Toe Guard",
+        "Sweat-Wicking Inner Lining",
+        "Reflective Night Strips"
+      ]
+    },
+    {
+      "id": "prod_47",
+      "name": "SpeedPro Lightweight Road Running Trainers",
+      "categoryId": "cat_fashion",
+      "categoryName": "Fashion & Apparel",
+      "price": 329,
+      "stock": 110,
+      "rating": 4.6,
+      "reviewCount": 65,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800&q=80",
+      "description": "Dynamic multi-color street trainers with high-abrasion grooved rubber sole, padded tongue, and supportive arch cup.",
+      "specs": [
+        "Grooved Anti-Slip Tread",
+        "Padded Ankle Collar",
+        "High Energy Return Midsole",
+        "Lace-Up Closure"
+      ]
+    },
+    {
+      "id": "prod_48",
+      "name": "WaveRide Comfort EVA Foam Slide Sandals",
+      "categoryId": "cat_fashion",
+      "categoryName": "Fashion & Apparel",
+      "price": 229,
+      "stock": 130,
+      "rating": 4.7,
+      "reviewCount": 145,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1603808033192-082d6919d3e1?w=800&q=80",
+      "description": "Waterproof, ultra-soft molded EVA recovery slides with ergonomic arch support and textured footbed for beach, casual indoor/outdoor lounging.",
+      "specs": [
+        "100% Waterproof EVA Foam",
+        "Contoured Arch Support",
+        "Anti-Slip Wave Tread",
+        "Non-Chafing Wide Strap"
+      ]
+    },
+    {
+      "id": "prod_49",
+      "name": "StreetFlex Classic Canvas Court Sneakers",
+      "categoryId": "cat_fashion",
+      "categoryName": "Fashion & Apparel",
+      "price": 359,
+      "stock": 85,
+      "rating": 4.8,
+      "reviewCount": 88,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?w=800&q=80",
+      "description": "Timeless low-profile vulcanized canvas sneakers with metal eyelets, contrast white stitching, and signature gum rubber waffle sole.",
+      "specs": [
+        "100% Breathable Cotton Canvas",
+        "Vulcanized Gum Rubber Sole",
+        "Metal Eyelets",
+        "Cushioned Ortho Insole"
+      ]
     }
   ],
   "orders": [

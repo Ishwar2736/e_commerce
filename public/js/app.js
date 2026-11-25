@@ -385,7 +385,10 @@
     `;
 
     for (const cat of state.categories) {
-      const isActive = state.activeCategory === cat.id;
+      const isActive = state.activeCategory === cat.id || 
+        (state.activeCategory === 'shoes' && cat.id === 'cat_fashion') ||
+        (state.activeCategory === 'tshirt' && cat.id === 'cat_fashion') ||
+        (state.activeCategory === 'gaming' && cat.id === 'cat_electronics');
       const icon = CATEGORY_ICONS[cat.id] || '📦';
       html += `
         <button onclick="window.filterCategory('${cat.id}')" class="category-pill whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-bold border ${isActive ? 'active' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100 shadow-xs'}">

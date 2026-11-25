@@ -379,6 +379,15 @@ export default async function handler(req, res) {
             if (catLower === 'electronics' || catLower === 'cat_electronics') {
               return pCatId === 'cat_electronics' || pCatName.includes('electronic') || pCatName.includes('gadget');
             }
+            if (catLower === 'shoes' || catLower === 'footwear' || catLower === 'sneakers') {
+              return (pCatId === 'cat_fashion' || pCatId === 'cat_sports') && (pName.includes('shoe') || pName.includes('sneaker') || pName.includes('loafer') || pName.includes('sandal') || pName.includes('slide') || pName.includes('boot') || pName.includes('trainer') || pName.includes('footwear'));
+            }
+            if (catLower === 'tshirt' || catLower === 't-shirt' || catLower === 'polos') {
+              return pCatId === 'cat_fashion' && (pName.includes('shirt') || pName.includes('tee') || pName.includes('polo') || pName.includes('top') || pName.includes('hoodie'));
+            }
+            if (catLower === 'gaming' || catLower === 'gaming-tech') {
+              return pCatId === 'cat_electronics' && (pName.includes('game') || pName.includes('console') || pName.includes('mouse') || pName.includes('pad') || pName.includes('cable') || pName.includes('mic') || pName.includes('earphone') || pName.includes('fan') || pName.includes('hub') || pName.includes('controller'));
+            }
             if (catLower === 'fashion' || catLower === 'cat_fashion' || catLower === 'apparel') {
               return pCatId === 'cat_fashion' || pCatName.includes('fashion') || pCatName.includes('apparel');
             }
