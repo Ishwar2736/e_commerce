@@ -2708,7 +2708,6 @@
     if (searchInput) searchInput.value = '';
     renderCategoryPills();
     loadProducts();
-    showToast(label ? `Filtered: ${label}` : `Showing deals under ₹${maxPrice}`, 'info');
     const catalogElem = document.getElementById('category-pills');
     if (catalogElem) {
       catalogElem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
