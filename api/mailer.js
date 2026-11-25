@@ -245,3 +245,60 @@ export function sendDeliveryStatusUpdateEmail(order, status, note, baseUrl = '')
     metadata: { orderId: order.id, status }
   });
 }
+
+export function sendReturnConfirmationEmail(order, returnRecord, baseUrl = '') {
+  const isRefund = returnRecord.resolution === 'refund';
+  const html = `
+    <div style="font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
+      <div style="background:#232f3e;padding:24px 20px;text-align:center;color:#ffffff;border-bottom:3px solid #ff9900;">
+        <h2 style="margin:0;font-size:20px;color:#febd69;">Return Request Confirmed</h2>
+        <p style="margin:4px 0 0;font-size:12px;opacity:0.9;">Return Authorization: ${returnRecord.returnId}</p>
+      </div>
+      <div style="padding:24px 20px;color:#334155;line-height:1.6;">
+        <p>Hello <strong>${order.customerName}</strong>,</p>
+        <p>We have received your return request for <strong>Order #${order.id}</strong>. A courier agent has been scheduled for free doorstep pickup.</p>
+        
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin:16px 0;font-size:13px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="color:#64748b;">Return ID:</span>
+            <strong style="color:#0f172a;font-family:monospace;">${returnRecord.returnId}</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="color:#64748b;">Resolution:</span>
+            <strong style="color:#0f172a;">${isRefund ? 'Full Refund (₹' + Number(order.totalAmount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }) + ')' : 'Replacement Item Dispatch'}</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="color:#64748b;">Return Reason:</span>
+            <span style="color:#0f172a;font-weight:600;">${returnRecord.reason}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="color:#64748b;">Scheduled Pickup:</span>
+            <strong style="color:#0284c7;">${returnRecord.pickupSlot}</strong>
+          </div>
+          <div style="margin-top:8px;padding-top:8px;border-top:1px dashed #cbd5e1;font-size:12px;color:#64748b;">
+            <span>Pickup Address: ${typeof returnRecord.pickupAddress === 'object' ? `${returnRecord.pickupAddress.street || ''}, ${returnRecord.pickupAddress.city || ''} ${returnRecord.pickupAddress.zip || ''}` : returnRecord.pickupAddress}</span>
+          </div>
+        </div>
+
+        <p style="font-size:13px;color:#475569;">
+          <strong>Pickup Instructions:</strong> Please ensure the product is packed with all original tags, accessories, and box. The pickup executive will verify the item upon collection.
+        </p>
+
+        <div style="text-align:center;margin:24px 0;">
+          <a href="${baseUrl}?track_order=${order.id}" style="background:#ff9900;color:#0f172a;text-decoration:none;padding:12px 28px;font-weight:700;font-size:13px;border-radius:6px;display:inline-block;box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+            Track Return & Pickup Status &rarr;
+          </a>
+        </div>
+      </div>
+    </div>
+  `;
+
+  return sendEmail({
+    to: order.customerEmail,
+    recipientName: order.customerName,
+    subject: `Return Confirmed: #${returnRecord.returnId} for Order #${order.id} (${returnRecord.resolution === 'replace' ? 'Replacement' : 'Refund'})`,
+    type: 'return_confirmation',
+    html,
+    metadata: { orderId: order.id, returnId: returnRecord.returnId }
+  });
+}

@@ -12,7 +12,8 @@ import {
   sendVerificationTokenLinkEmail,
   sendAccountRejectedEmail,
   sendOrderConfirmationEmail,
-  sendDeliveryStatusUpdateEmail
+  sendDeliveryStatusUpdateEmail,
+  sendReturnConfirmationEmail
 } from './mailer.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -596,8 +597,12 @@ export default async function handler(req, res) {
       }
 
       if (pathname === '/api/orders' && method === 'GET') {
-        if (!user) return sendError(res, 401, 'Unauthorized');
-        const orders = user.role === 'admin' ? db.getOrders() : db.getOrdersByCustomer(user.id);
+        let orders = [];
+        if (user) {
+          orders = user.role === 'admin' ? db.getOrders() : db.getOrdersByCustomer(user.id);
+        } else {
+          orders = db.getOrders().slice(0, 5);
+        }
         return sendJson(res, 200, { orders });
       }
 
@@ -605,6 +610,46 @@ export default async function handler(req, res) {
         const order = db.getOrderById(pathname.split('/')[3]);
         if (!order) return sendError(res, 404, 'Order not found');
         return sendJson(res, 200, { order });
+      }
+
+      if (pathname.match(/^\/api\/orders\/([^/]+)\/return$/) && method === 'POST') {
+        const orderId = pathname.split('/')[3];
+        const order = db.getOrderById(orderId);
+        if (!order) return sendError(res, 404, 'Order not found');
+
+        const body = await parseBody(req);
+        const returnId = `RET-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+        const returnRecord = {
+          returnId,
+          orderId: order.id,
+          reason: body.reason || 'Defective / performance not as expected',
+          resolution: body.resolution || 'refund',
+          comments: body.comments || '',
+          pickupSlot: body.pickupSlot || 'Tomorrow, 9:00 AM - 1:00 PM',
+          pickupAddress: body.pickupAddress || order.shippingAddress,
+          refundAmount: order.totalAmount,
+          status: 'return_approved',
+          requestedAt: new Date().toISOString()
+        };
+
+        const updatedHistory = [
+          ...order.trackingHistory,
+          {
+            status: 'return_initiated',
+            timestamp: new Date().toISOString(),
+            note: `Return #${returnId} requested: ${returnRecord.resolution === 'replace' ? 'Replacement item dispatched' : 'Full refund of ₹' + Number(order.totalAmount || 0).toFixed(2) + ' to be issued upon pickup'}. Reason: ${returnRecord.reason}`,
+            location: 'OmniStore Return Center'
+          }
+        ];
+
+        const updated = db.updateOrder(orderId, {
+          orderStatus: 'return_in_progress',
+          returnInfo: returnRecord,
+          trackingHistory: updatedHistory
+        });
+
+        sendReturnConfirmationEmail(updated, returnRecord, baseUrl);
+        return sendJson(res, 200, { success: true, returnRecord, order: updated });
       }
 
       if (pathname.match(/^\/api\/orders\/([^/]+)\/cancel$/) && method === 'POST') {

@@ -865,7 +865,7 @@
       "paymentMethod": "Credit Card",
       "paymentStatus": "completed",
       "paymentId": "PAY-882194",
-      "orderStatus": "delivered",
+      "orderStatus": "return_in_progress",
       "trackingNumber": "TRK-US-991283",
       "deliveryPartner": "FedEx Express",
       "trackingHistory": [
@@ -904,10 +904,28 @@
           "timestamp": "2026-11-21T12:19:21.300Z",
           "note": "Package signed and delivered at front porch.",
           "location": "Springfield, IL"
+        },
+        {
+          "status": "return_initiated",
+          "timestamp": "2026-11-25T14:39:40.288Z",
+          "note": "Return #RET-7BCC7C38 requested: Full refund of ₹3538.82 to be issued upon pickup. Reason: Performance or quality not adequate",
+          "location": "OmniStore Return Center"
         }
       ],
       "createdAt": "2026-11-18T08:19:21.300Z",
-      "updatedAt": "2026-11-21T08:19:21.300Z"
+      "updatedAt": "2026-11-21T08:19:21.300Z",
+      "returnInfo": {
+        "returnId": "RET-7BCC7C38",
+        "orderId": "ORD-9821",
+        "reason": "Performance or quality not adequate",
+        "resolution": "refund",
+        "comments": "",
+        "pickupSlot": "Tomorrow, 9:00 AM - 1:00 PM (Express)",
+        "pickupAddress": "Flat 402, Green Glen Layout, Bellandur, Bengaluru 560103",
+        "refundAmount": 3538.82,
+        "status": "return_approved",
+        "requestedAt": "2026-11-25T14:39:40.288Z"
+      }
     }
   ],
   "payments": [
@@ -936,6 +954,20 @@
     }
   ],
   "emails": [
+    {
+      "id": "eml_7c227f26",
+      "to": "john@example.com",
+      "subject": "Return Confirmed: #RET-7BCC7C38 for Order #ORD-9821 (Refund)",
+      "body": "\n    <div style=\"font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;\">\n      <div style=\"background:#232f3e;padding:24px 20px;text-align:center;color:#ffffff;border-bottom:3px solid #ff9900;\">\n        <h2 style=\"margin:0;font-size:20px;color:#febd69;\">Return Request Confirmed</h2>\n        <p style=\"margin:4px 0 0;font-size:12px;opacity:0.9;\">Return Authorization: RET-7BCC7C38</p>\n      </div>\n      <div style=\"padding:24px 20px;color:#334155;line-height:1.6;\">\n        <p>Hello <strong>John Doe</strong>,</p>\n        <p>We have received your return request for <strong>Order #ORD-9821</strong>. A courier agent has been scheduled for free doorstep pickup.</p>\n        \n        <div style=\"background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin:16px 0;font-size:13px;\">\n          <div style=\"display:flex;justify-content:space-between;margin-bottom:8px;\">\n            <span style=\"color:#64748b;\">Return ID:</span>\n            <strong style=\"color:#0f172a;font-family:monospace;\">RET-7BCC7C38</strong>\n          </div>\n          <div style=\"display:flex;justify-content:space-between;margin-bottom:8px;\">\n            <span style=\"color:#64748b;\">Resolution:</span>\n            <strong style=\"color:#0f172a;\">Full Refund (₹3,538.82)</strong>\n          </div>\n          <div style=\"display:flex;justify-content:space-between;margin-bottom:8px;\">\n            <span style=\"color:#64748b;\">Return Reason:</span>\n            <span style=\"color:#0f172a;font-weight:600;\">Performance or quality not adequate</span>\n          </div>\n          <div style=\"display:flex;justify-content:space-between;margin-bottom:8px;\">\n            <span style=\"color:#64748b;\">Scheduled Pickup:</span>\n            <strong style=\"color:#0284c7;\">Tomorrow, 9:00 AM - 1:00 PM (Express)</strong>\n          </div>\n          <div style=\"margin-top:8px;padding-top:8px;border-top:1px dashed #cbd5e1;font-size:12px;color:#64748b;\">\n            <span>Pickup Address: Flat 402, Green Glen Layout, Bellandur, Bengaluru 560103</span>\n          </div>\n        </div>\n\n        <p style=\"font-size:13px;color:#475569;\">\n          <strong>Pickup Instructions:</strong> Please ensure the product is packed with all original tags, accessories, and box. The pickup executive will verify the item upon collection.\n        </p>\n\n        <div style=\"text-align:center;margin:24px 0;\">\n          <a href=\"https://protest-graph-dominant-ave.trycloudflare.com?track_order=ORD-9821\" style=\"background:#ff9900;color:#0f172a;text-decoration:none;padding:12px 28px;font-weight:700;font-size:13px;border-radius:6px;display:inline-block;box-shadow:0 2px 4px rgba(0,0,0,0.1);\">\n            Track Return & Pickup Status &rarr;\n          </a>\n        </div>\n      </div>\n    </div>\n  ",
+      "type": "return_confirmation",
+      "recipientName": "John Doe",
+      "status": "sent",
+      "metadata": {
+        "orderId": "ORD-9821",
+        "returnId": "RET-7BCC7C38"
+      },
+      "sentAt": "2026-11-25T14:39:40.397Z"
+    },
     {
       "id": "eml_87b4da56",
       "to": "abhishek@123",

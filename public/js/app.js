@@ -1203,25 +1203,447 @@
   // (Track Order + Update Delivery Status + Cancel Order)
   // ==========================================
 
-  window.openTrackOrderModal = function () {
+  // ==========================================
+  // RETURNS & ORDERS HUB
+  // (Order History + Return/Replace Items + Live Tracking)
+  // ==========================================
+
+  window.openTrackOrderModal = async function (activeTab = 'orders', targetOrderId = null) {
     const modal = document.getElementById('tracking-modal');
     const content = document.getElementById('tracking-modal-content');
+    if (!modal || !content) return;
 
+    modal.classList.add('active');
+
+    // Show loading state while fetching orders
     content.innerHTML = `
-      <div class="space-y-4">
-        <div class="flex items-center justify-between">
-          <h3 class="font-bold text-slate-900 text-base">Track Your Shipment</h3>
-          <button onclick="window.closeModals()" class="text-slate-400 hover:text-slate-600">✕</button>
+      <div class="py-12 text-center text-slate-500 space-y-3">
+        <div class="w-8 h-8 border-3 border-[#ff9900] border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <p class="text-xs font-semibold">Loading your orders and return status...</p>
+      </div>
+    `;
+
+    try {
+      const data = await api('/api/orders').catch(() => ({ orders: [] }));
+      const orders = data.orders || [];
+      renderReturnsAndOrdersModal(activeTab, targetOrderId, orders);
+    } catch {
+      renderReturnsAndOrdersModal(activeTab, targetOrderId, []);
+    }
+  };
+
+  window.openReturnModal = function (orderId) {
+    window.openTrackOrderModal('return', orderId);
+  };
+
+  function renderReturnsAndOrdersModal(activeTab, targetOrderId, orders) {
+    const content = document.getElementById('tracking-modal-content');
+    if (!content) return;
+
+    // Header with Amazon-style Navigation Tabs
+    const html = `
+      <div class="space-y-5">
+        <!-- Modal Top Bar -->
+        <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">📦</span>
+            <div>
+              <h3 class="font-extrabold text-slate-900 text-lg leading-tight">Returns & Orders</h3>
+              <p class="text-xs text-slate-500">Track shipments, return or replace delivered products, and check refunds</p>
+            </div>
+          </div>
+          <button onclick="window.closeModals()" class="text-slate-400 hover:text-slate-700 text-xl font-bold p-1">&times;</button>
         </div>
+
+        <!-- 3 Tabs Navigation -->
+        <div class="flex items-center gap-2 border-b border-slate-200 text-xs font-bold">
+          <button type="button" onclick="window.switchReturnsTab('orders')" class="px-3.5 py-2 border-b-2 transition ${activeTab === 'orders' ? 'border-[#ff9900] text-[#0f1111] font-black' : 'border-transparent text-slate-500 hover:text-slate-800'}">
+            📦 Your Orders (${orders.length})
+          </button>
+          <button type="button" onclick="window.switchReturnsTab('return')" class="px-3.5 py-2 border-b-2 transition ${activeTab === 'return' ? 'border-[#ff9900] text-[#0f1111] font-black' : 'border-transparent text-slate-500 hover:text-slate-800'}">
+            🔄 Return or Replace Items
+          </button>
+          <button type="button" onclick="window.switchReturnsTab('track')" class="px-3.5 py-2 border-b-2 transition ${activeTab === 'track' ? 'border-[#ff9900] text-[#0f1111] font-black' : 'border-transparent text-slate-500 hover:text-slate-800'}">
+            🚚 Track by Order ID
+          </button>
+        </div>
+
+        <!-- Tab Body -->
+        <div id="returns-tab-body">
+          ${renderReturnsTabBody(activeTab, targetOrderId, orders)}
+        </div>
+      </div>
+    `;
+
+    content.innerHTML = html;
+  }
+
+  window.switchReturnsTab = async function (tab, targetOrderId = null) {
+    try {
+      const data = await api('/api/orders').catch(() => ({ orders: [] }));
+      const orders = data.orders || [];
+      const body = document.getElementById('returns-tab-body');
+      if (body) {
+        body.innerHTML = renderReturnsTabBody(tab, targetOrderId, orders);
+      } else {
+        renderReturnsAndOrdersModal(tab, targetOrderId, orders);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  function renderReturnsTabBody(tab, targetOrderId, orders) {
+    if (tab === 'orders') {
+      return renderYourOrdersList(orders);
+    } else if (tab === 'return') {
+      return renderReturnRequestForm(orders, targetOrderId);
+    } else {
+      return renderTrackByIdInput();
+    }
+  }
+
+  function renderYourOrdersList(orders) {
+    if (!orders || !orders.length) {
+      return `
+        <div class="py-12 text-center bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+          <div class="text-3xl">📦</div>
+          <h4 class="font-bold text-slate-800 text-sm">No orders found</h4>
+          <p class="text-xs text-slate-500 max-w-sm mx-auto">You haven't placed any orders recently. Explore deals on our storefront or track a package by ID.</p>
+          <div class="pt-2 flex justify-center gap-2">
+            <button onclick="window.closeModals(); window.switchTab('store');" class="btn-amazon-cart text-xs py-2 px-4 font-bold">
+              Start Shopping &rarr;
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+        ${orders.map(order => {
+          const isDelivered = order.orderStatus === 'delivered';
+          const hasReturn = Boolean(order.returnInfo);
+          const isCancelled = order.orderStatus === 'cancelled';
+
+          return `
+            <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs hover:shadow-xs transition">
+              <!-- Order Header Strip (Amazon Style) -->
+              <div class="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
+                <div class="flex items-center gap-4 sm:gap-6">
+                  <div>
+                    <div class="text-[10px] text-slate-400 uppercase font-semibold">Order Placed</div>
+                    <div class="font-bold text-slate-800">${new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+                  </div>
+                  <div>
+                    <div class="text-[10px] text-slate-400 uppercase font-semibold">Total</div>
+                    <div class="font-extrabold text-slate-900">${formatINR(order.totalAmount)}</div>
+                  </div>
+                  <div>
+                    <div class="text-[10px] text-slate-400 uppercase font-semibold">Ship To</div>
+                    <div class="font-medium text-slate-800 truncate max-w-[120px]">${escapeHtml(order.customerName || 'Customer')}</div>
+                  </div>
+                </div>
+                <div>
+                  <div class="text-[10px] text-slate-400 uppercase font-semibold text-right">Order #</div>
+                  <strong class="font-mono text-slate-900">${order.id}</strong>
+                </div>
+              </div>
+
+              <!-- Order Body -->
+              <div class="p-4 space-y-4">
+                <!-- Status Badge -->
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    ${hasReturn ? `
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 font-bold text-xs border border-amber-300">
+                        <span>🔄</span> Return Initiated (${escapeHtml(order.returnInfo.returnId)})
+                      </span>
+                    ` : isDelivered ? `
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 font-bold text-xs border border-emerald-300">
+                        <span>✓</span> Delivered &bull; Return window open
+                      </span>
+                    ` : isCancelled ? `
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 text-red-900 font-bold text-xs border border-red-200">
+                        Cancelled &bull; Refund processed
+                      </span>
+                    ` : `
+                      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-100 text-blue-900 font-bold text-xs border border-blue-200">
+                        <span>🚚</span> In Transit &bull; ${escapeHtml(order.orderStatus.replace(/_/g, ' '))}
+                      </span>
+                    `}
+                  </div>
+                  <span class="text-[11px] text-slate-400">Carrier: ${escapeHtml(order.deliveryPartner || 'Express')}</span>
+                </div>
+
+                <!-- Return Info Box if active -->
+                ${hasReturn ? `
+                  <div class="p-3 bg-amber-50/70 border border-amber-200 rounded-lg text-xs text-amber-950 space-y-1">
+                    <div class="flex items-center justify-between font-bold">
+                      <span>Pickup Scheduled: ${escapeHtml(order.returnInfo.pickupSlot)}</span>
+                      <span class="text-emerald-800">${order.returnInfo.resolution === 'replace' ? 'Replacement Dispatched' : 'Full Refund: ' + formatINR(order.returnInfo.refundAmount || order.totalAmount)}</span>
+                    </div>
+                    <p class="text-[11px] text-amber-800">Reason: ${escapeHtml(order.returnInfo.reason)}</p>
+                  </div>
+                ` : ''}
+
+                <!-- Items Preview -->
+                <div class="space-y-2">
+                  ${order.items.map(item => `
+                    <div class="flex items-center gap-3">
+                      <div class="w-12 h-12 rounded-lg bg-slate-100 border border-slate-200 flex-shrink-0 overflow-hidden p-1 flex items-center justify-center">
+                        <img src="${item.image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100'}" alt="${escapeHtml(item.name)}" class="w-full h-full object-contain">
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-xs font-bold text-slate-900 truncate">${escapeHtml(item.name)}</p>
+                        <p class="text-[11px] text-slate-500">Qty: ${item.quantity} &bull; ${formatINR(item.price)} each</p>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+
+                <!-- Action Buttons Strip -->
+                <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <div class="flex items-center gap-2">
+                    <button type="button" onclick="window.trackOrderById('${order.id}')" class="px-3.5 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-100 font-bold text-slate-800">
+                      Track Package
+                    </button>
+                    ${hasReturn ? `
+                      <button type="button" onclick="window.viewReturnDetails('${order.id}')" class="px-3.5 py-1.5 rounded-lg bg-amber-100 text-amber-900 font-bold border border-amber-300 hover:bg-amber-200">
+                        View Return Details
+                      </button>
+                    ` : isDelivered ? `
+                      <button type="button" onclick="window.openReturnModal('${order.id}')" class="btn-amazon-cart px-3.5 py-1.5 font-bold shadow-xs">
+                        🔄 Return or Replace Items
+                      </button>
+                    ` : !isCancelled ? `
+                      <button type="button" onclick="window.openReturnModal('${order.id}')" class="px-3.5 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-100 font-bold text-slate-700">
+                        Return / Replace
+                      </button>
+                    ` : ''}
+                  </div>
+                  <div>
+                    ${!isCancelled && !isDelivered && !hasReturn ? `
+                      <button type="button" onclick="window.cancelCustomerOrder('${order.id}')" class="text-xs text-red-600 hover:underline font-semibold">
+                        Cancel Order
+                      </button>
+                    ` : ''}
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  function renderReturnRequestForm(orders, preselectedOrderId) {
+    const eligibleOrders = (orders || []).filter(o => o.orderStatus !== 'cancelled');
+    if (!eligibleOrders.length) {
+      return `
+        <div class="py-12 text-center bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+          <div class="text-3xl">🔄</div>
+          <h4 class="font-bold text-slate-800 text-sm">No eligible orders for return</h4>
+          <p class="text-xs text-slate-500 max-w-sm mx-auto">You do not have any delivered or active orders eligible for return at the moment.</p>
+          <button onclick="window.switchReturnsTab('orders')" class="btn-primary text-xs py-2 px-4 font-bold">
+            View All Orders
+          </button>
+        </div>
+      `;
+    }
+
+    const selectedOrder = eligibleOrders.find(o => o.id === preselectedOrderId) || eligibleOrders[0];
+
+    return `
+      <form onsubmit="window.submitReturnRequest(event, '${selectedOrder.id}')" class="space-y-4 max-h-[62vh] overflow-y-auto pr-1 text-xs">
+        <!-- Selected Order Banner -->
+        <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between">
+          <div>
+            <div class="text-[10px] text-amber-800 uppercase font-extrabold">Returning Items From</div>
+            <div class="font-black text-slate-900 text-sm">Order #${selectedOrder.id} &bull; ${formatINR(selectedOrder.totalAmount)}</div>
+            <div class="text-[11px] text-slate-600">${selectedOrder.items.map(i => `${escapeHtml(i.name)} (${i.quantity})`).join(', ')}</div>
+          </div>
+          ${eligibleOrders.length > 1 ? `
+            <select onchange="window.switchReturnsTab('return', this.value)" class="text-xs p-1.5 bg-white border border-amber-300 rounded-lg font-bold text-slate-800 focus:outline-none">
+              ${eligibleOrders.map(o => `
+                <option value="${o.id}" ${o.id === selectedOrder.id ? 'selected' : ''}>Switch to #${o.id}</option>
+              `).join('')}
+            </select>
+          ` : ''}
+        </div>
+
+        <!-- Step 1: Reason for return -->
+        <div class="space-y-1.5">
+          <label class="font-bold text-slate-800 text-xs">1. Why are you returning this item?</label>
+          <select id="return-reason" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#ff9900]">
+            <option value="">-- Select a return reason --</option>
+            <option value="Defective or does not work properly">Defective or does not work properly</option>
+            <option value="Wrong item or size delivered">Wrong item or size delivered</option>
+            <option value="Item arrived damaged or in poor condition">Item arrived damaged or in poor condition</option>
+            <option value="Missing parts or accessories">Missing parts or accessories</option>
+            <option value="Performance or quality not adequate">Performance or quality not adequate</option>
+            <option value="Different from website description">Different from website description</option>
+            <option value="Better price available elsewhere">Better price available elsewhere</option>
+            <option value="Changed mind / No longer needed">Changed mind / No longer needed</option>
+          </select>
+        </div>
+
+        <!-- Step 2: Choose Resolution (Refund or Replacement) -->
+        <div class="space-y-2">
+          <label class="font-bold text-slate-800 text-xs">2. Choose your return resolution</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 bg-white hover:border-[#ff9900] cursor-pointer">
+              <input type="radio" name="return_resolution" value="refund" checked class="mt-0.5 text-[#ff9900] focus:ring-[#ff9900]">
+              <div>
+                <strong class="text-slate-900 block font-bold">Refund to Bank / Original Payment</strong>
+                <span class="text-[11px] text-slate-500">Full refund of ${formatINR(selectedOrder.totalAmount)} credited within 2-4 business days of pickup</span>
+              </div>
+            </label>
+            <label class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 bg-white hover:border-[#ff9900] cursor-pointer">
+              <input type="radio" name="return_resolution" value="replace" class="mt-0.5 text-[#ff9900] focus:ring-[#ff9900]">
+              <div>
+                <strong class="text-slate-900 block font-bold">Free Replacement Unit</strong>
+                <span class="text-[11px] text-slate-500">A brand new replacement item will be dispatched immediately at zero extra cost</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Step 3: Doorstep Pickup Details -->
+        <div class="space-y-2.5">
+          <label class="font-bold text-slate-800 text-xs">3. Doorstep Pickup Schedule & Address</label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <span class="text-[11px] text-slate-500 font-semibold">Preferred Pickup Slot</span>
+              <select id="return-slot" class="w-full mt-1 p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#ff9900]">
+                <option value="Tomorrow, 9:00 AM - 1:00 PM (Express)">Tomorrow, 9:00 AM - 1:00 PM (Express)</option>
+                <option value="Tomorrow, 2:00 PM - 6:00 PM">Tomorrow, 2:00 PM - 6:00 PM</option>
+                <option value="Day after tomorrow, 10:00 AM - 2:00 PM">Day after tomorrow, 10:00 AM - 2:00 PM</option>
+              </select>
+            </div>
+            <div>
+              <span class="text-[11px] text-slate-500 font-semibold">Pickup Address</span>
+              <input type="text" id="return-address" value="${typeof selectedOrder.shippingAddress === 'object' ? `${selectedOrder.shippingAddress.street || ''}, ${selectedOrder.shippingAddress.city || ''} ${selectedOrder.shippingAddress.zip || ''}` : selectedOrder.shippingAddress}" class="w-full mt-1 p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#ff9900]">
+            </div>
+          </div>
+          <div>
+            <span class="text-[11px] text-slate-500 font-semibold">Additional Comments (Optional)</span>
+            <input type="text" id="return-comments" placeholder="e.g. Left earcup sound crackling / packaging is intact" class="w-full mt-1 p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs">
+          </div>
+        </div>
+
+        <!-- Policy Banner -->
+        <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-[11px] text-slate-600 flex items-center gap-2">
+          <span>🛡️</span>
+          <span><strong>OmniStore 7-Day Guarantee:</strong> Free doorstep pickup &bull; Zero return fees &bull; Instant refund processing once collected</span>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-2">
+          <button type="submit" class="w-full btn-amazon-cart py-2.5 font-black text-xs shadow-md">
+            Confirm Return & Schedule Free Pickup &rarr;
+          </button>
+        </div>
+      </form>
+    `;
+  }
+
+  function renderTrackByIdInput() {
+    return `
+      <div class="py-4 space-y-4">
+        <p class="text-xs text-slate-600 leading-relaxed">
+          Enter an <strong>Order ID</strong> (e.g. <code class="bg-slate-100 px-1 py-0.5 rounded text-blue-600">ORD-9821</code>) or a <strong>Return Authorization ID</strong> to track real-time logistics milestones, doorstep pickup schedule, and refund disbursements.
+        </p>
         <div class="flex gap-2">
-          <input type="text" id="track-id-input" placeholder="Enter Order ID (e.g. ORD-9821)" class="flex-1 text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg">
-          <button onclick="window.trackOrderById(document.getElementById('track-id-input').value)" class="btn-primary text-xs py-2 px-4 font-bold">
+          <input type="text" id="track-id-input" placeholder="e.g. ORD-9821 or RET-..." class="flex-1 text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#ff9900]">
+          <button type="button" onclick="window.trackOrderById(document.getElementById('track-id-input').value)" class="btn-primary text-xs py-2 px-5 font-bold">
             Search
+          </button>
+        </div>
+        <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900 flex items-center justify-between">
+          <span>Need to check recent delivered orders?</span>
+          <button type="button" onclick="window.switchReturnsTab('orders')" class="text-blue-700 underline font-bold hover:text-blue-900">
+            View Your Orders &rarr;
           </button>
         </div>
       </div>
     `;
-    modal.classList.add('active');
+  }
+
+  window.submitReturnRequest = async function (event, orderId) {
+    event.preventDefault();
+    const reason = document.getElementById('return-reason')?.value;
+    const resolution = document.querySelector('input[name="return_resolution"]:checked')?.value || 'refund';
+    const pickupSlot = document.getElementById('return-slot')?.value;
+    const pickupAddress = document.getElementById('return-address')?.value;
+    const comments = document.getElementById('return-comments')?.value;
+
+    if (!reason) {
+      showToast('Please select a return reason.', 'error');
+      return;
+    }
+
+    try {
+      const data = await api(`/api/orders/${orderId}/return`, {
+        method: 'POST',
+        body: JSON.stringify({ reason, resolution, pickupSlot, pickupAddress, comments })
+      });
+
+      showToast(`Return #${data.returnRecord.returnId} confirmed! Pickup scheduled.`, 'success');
+      await loadEmails(); // Update simulated mailbox count
+
+      // Display Return Confirmation Pass
+      const body = document.getElementById('returns-tab-body');
+      if (body) {
+        body.innerHTML = `
+          <div class="py-6 text-center space-y-4">
+            <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold border border-emerald-300">
+              ✓
+            </div>
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">Return Confirmed</span>
+              <h3 class="text-xl font-black text-slate-900 mt-2">Return Request #${data.returnRecord.returnId}</h3>
+              <p class="text-xs text-slate-500 mt-1">A confirmation acknowledgement has been dispatched to your mailbox.</p>
+            </div>
+
+            <div class="max-w-md mx-auto bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs text-left space-y-2">
+              <div class="flex justify-between">
+                <span class="text-slate-500">Order ID:</span>
+                <strong class="font-mono text-slate-900">${orderId}</strong>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Return Resolution:</span>
+                <strong class="text-emerald-700">${resolution === 'replace' ? 'Free Replacement Unit' : 'Full Refund: ' + formatINR(data.order.totalAmount)}</strong>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Scheduled Pickup Slot:</span>
+                <strong class="text-blue-700">${escapeHtml(pickupSlot)}</strong>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Pickup Location:</span>
+                <span class="font-semibold text-slate-800 text-right max-w-[200px] truncate">${escapeHtml(pickupAddress)}</span>
+              </div>
+            </div>
+
+            <div class="pt-2 flex justify-center gap-3">
+              <button type="button" onclick="window.trackOrderById('${orderId}')" class="btn-primary text-xs py-2 px-4 font-bold">
+                Track Live Status
+              </button>
+              <button type="button" onclick="window.switchReturnsTab('orders')" class="px-4 py-2 border border-slate-300 hover:bg-slate-100 rounded-lg text-xs font-bold text-slate-800">
+                Back to Your Orders
+              </button>
+            </div>
+          </div>
+        `;
+      }
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  };
+
+  window.viewReturnDetails = function (orderId) {
+    window.trackOrderById(orderId);
   };
 
   window.trackOrderById = async function (orderId) {
@@ -1249,16 +1671,48 @@
 
     const currentIdx = steps.findIndex(s => s.key === order.orderStatus);
     const isCancelled = order.orderStatus === 'cancelled';
+    const hasReturn = Boolean(order.returnInfo);
 
     content.innerHTML = `
       <div class="relative space-y-5">
-        <button onclick="window.closeModals()" class="absolute top-0 right-0 text-slate-400 hover:text-slate-600">✕</button>
-        
-        <div>
-          <span class="text-xs font-bold text-blue-600 uppercase">Live Carrier Status</span>
-          <h3 class="text-xl font-black text-slate-900">Order #${order.id}</h3>
-          <p class="text-xs text-slate-500">Carrier: <strong>${escapeHtml(order.deliveryPartner || 'Express Logistics')}</strong> &bull; Tracking: <strong class="font-mono text-blue-600">${order.trackingNumber}</strong></p>
+        <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+          <button onclick="window.openTrackOrderModal('orders')" class="text-xs text-[#007185] hover:underline font-bold flex items-center gap-1">
+            &larr; Back to Returns & Orders
+          </button>
+          <button onclick="window.closeModals()" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
         </div>
+        
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="text-xs font-bold text-blue-600 uppercase">Live Carrier Status</span>
+            <h3 class="text-xl font-black text-slate-900">Order #${order.id}</h3>
+            <p class="text-xs text-slate-500">Carrier: <strong>${escapeHtml(order.deliveryPartner || 'Express Logistics')}</strong> &bull; Tracking: <strong class="font-mono text-blue-600">${order.trackingNumber}</strong></p>
+          </div>
+          <div>
+            ${hasReturn ? `
+              <span class="px-3 py-1.5 rounded-full bg-amber-100 text-amber-900 font-extrabold text-xs border border-amber-300">
+                🔄 Return: ${escapeHtml(order.returnInfo.returnId)}
+              </span>
+            ` : ''}
+          </div>
+        </div>
+
+        ${hasReturn ? `
+          <!-- Return Status Milestone Banner -->
+          <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-950 space-y-2">
+            <div class="flex items-center justify-between font-bold">
+              <span class="text-amber-900 flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                Doorstep Return Pickup Scheduled
+              </span>
+              <span class="text-emerald-700 font-extrabold">${order.returnInfo.resolution === 'replace' ? 'Free Replacement Dispatched' : 'Refund: ' + formatINR(order.returnInfo.refundAmount || order.totalAmount)}</span>
+            </div>
+            <p class="text-[11px] text-amber-800">
+              Pickup Slot: <strong>${escapeHtml(order.returnInfo.pickupSlot)}</strong> &bull; Location: ${escapeHtml(typeof order.returnInfo.pickupAddress === 'object' ? `${order.returnInfo.pickupAddress.street || ''}, ${order.returnInfo.pickupAddress.city || ''}` : order.returnInfo.pickupAddress)}
+            </p>
+            <p class="text-[10px] text-slate-500">Reason: ${escapeHtml(order.returnInfo.reason)}</p>
+          </div>
+        ` : ''}
 
         ${isCancelled ? `
           <div class="p-4 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700">
@@ -1268,7 +1722,7 @@
         ` : `
           <!-- Visual Timeline -->
           <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
-            <h4 class="text-xs font-bold text-slate-800 uppercase">Delivery Milestones</h4>
+            <h4 class="text-xs font-bold text-slate-800 uppercase">Logistics & Tracking Milestones</h4>
             <div class="space-y-0">
               ${order.trackingHistory.map((h, i) => `
                 <div class="timeline-step completed">
@@ -1308,14 +1762,24 @@
           </div>
         </div>
 
-        <!-- Cancel Order Action (Customer Actor) -->
-        ${!isCancelled && order.orderStatus !== 'delivered' ? `
-          <div class="pt-2">
-            <button onclick="window.cancelCustomerOrder('${order.id}')" class="w-full py-2 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-xs font-bold transition">
-              Cancel Order & Request Full Refund
+        <!-- Return / Cancel Actions -->
+        <div class="pt-2 flex flex-wrap items-center justify-between gap-2">
+          ${!hasReturn && order.orderStatus === 'delivered' ? `
+            <button onclick="window.openReturnModal('${order.id}')" class="btn-amazon-cart text-xs py-2 px-5 font-black shadow-xs">
+              🔄 Return or Replace Items
             </button>
-          </div>
-        ` : ''}
+          ` : !hasReturn && !isCancelled ? `
+            <button onclick="window.openReturnModal('${order.id}')" class="px-4 py-2 rounded-lg border border-slate-300 hover:bg-slate-100 font-bold text-xs text-slate-800">
+              🔄 Request Return / Replacement
+            </button>
+          ` : ''}
+
+          ${!isCancelled && order.orderStatus !== 'delivered' && !hasReturn ? `
+            <button onclick="window.cancelCustomerOrder('${order.id}')" class="py-2 px-4 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-xs font-bold transition">
+              Cancel Order & Refund
+            </button>
+          ` : ''}
+        </div>
       </div>
     `;
 
