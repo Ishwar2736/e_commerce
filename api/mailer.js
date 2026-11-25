@@ -1,5 +1,22 @@
 import crypto from 'node:crypto';
+import nodemailer from 'nodemailer';
 import { db } from './db.js';
+
+// Live Email Transport Configuration
+const SMTP_USER = process.env.SMTP_USER || 'ishwarspatil2006@gmail.com';
+const SMTP_PASS = process.env.SMTP_PASS || '';
+const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+
+let transporter = null;
+if (SMTP_PASS) {
+  transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: SMTP_USER,
+      pass: SMTP_PASS
+    }
+  });
+}
 
 export function sendEmail({ to, subject, html, type, recipientName, metadata = {} }) {
   const emailRecord = {
@@ -16,6 +33,40 @@ export function sendEmail({ to, subject, html, type, recipientName, metadata = {
 
   db.addEmail(emailRecord);
   console.log(`[EMAIL DISPATCHED] To: ${to} | Type: ${type} | Subject: ${subject}`);
+
+  // Dispatch real email via Gmail SMTP if App Password is provided
+  if (transporter) {
+    transporter.sendMail({
+      from: `"OmniStore" <${SMTP_USER}>`,
+      to,
+      subject,
+      html
+    }).then(info => {
+      console.log(`[REAL GMAIL DELIVERED] MessageId: ${info.messageId} to ${to}`);
+    }).catch(err => {
+      console.error(`[SMTP ERROR] Could not deliver to ${to}:`, err.message);
+    });
+  } else if (RESEND_API_KEY) {
+    // Dispatch via Resend API if API Key is provided
+    fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: 'OmniStore <onboarding@resend.dev>',
+        to: [to],
+        subject,
+        html
+      })
+    }).then(res => res.json()).then(data => {
+      console.log(`[REAL RESEND EMAIL DELIVERED] ID: ${data.id} to ${to}`);
+    }).catch(err => {
+      console.error(`[RESEND ERROR] Could not deliver to ${to}:`, err.message);
+    });
+  }
+
   return emailRecord;
 }
 
