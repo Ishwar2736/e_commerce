@@ -624,6 +624,215 @@
         "HDMI ARC & Optical",
         "Bluetooth 5.3"
       ]
+    },
+    {
+      "id": "prod_26",
+      "name": "Classic Combed Cotton Crewneck T-Shirt",
+      "categoryId": "cat_fashion",
+      "categoryName": "Fashion & Apparel",
+      "price": 199,
+      "stock": 80,
+      "rating": 4.6,
+      "reviewCount": 112,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&q=80",
+      "description": "100% combed breathable cotton everyday crewneck t-shirt. Pre-shrunk bio-washed fabric for all-day comfort.",
+      "specs": [
+        "100% Breathable Cotton",
+        "Pre-Shrunk Bio-Washed",
+        "Ribbed Crew Collar",
+        "Regular Everyday Fit"
+      ]
+    },
+    {
+      "id": "prod_27",
+      "name": "Regular Fit Pique Solid Polo T-Shirt",
+      "categoryId": "cat_fashion",
+      "categoryName": "Fashion & Apparel",
+      "price": 279,
+      "stock": 65,
+      "rating": 4.7,
+      "reviewCount": 94,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=800&q=80",
+      "description": "Smart casual polo shirt crafted from breathable honeycomb pique cotton blend with ribbed collar and button placket.",
+      "specs": [
+        "Durable Honeycomb Pique",
+        "2-Button Placket",
+        "Anti-Pilling Finish",
+        "Machine Washable"
+      ]
+    },
+    {
+      "id": "prod_28",
+      "name": "Vintage Graphic Print Oversized Tee",
+      "categoryId": "cat_fashion",
+      "categoryName": "Fashion & Apparel",
+      "price": 249,
+      "stock": 50,
+      "rating": 4.8,
+      "reviewCount": 78,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800&q=80",
+      "description": "Urban streetwear graphic printed t-shirt with relaxed drop shoulder fit and premium screenprinted typography.",
+      "specs": [
+        "180 GSM Heavy Fabric",
+        "Distressed Screenprint",
+        "Drop Shoulder Fit",
+        "Soft Handfeel"
+      ]
+    },
+    {
+      "id": "prod_29",
+      "name": "Dry-Fit Athletic Stretch Training T-Shirt",
+      "categoryId": "cat_fashion",
+      "categoryName": "Fashion & Apparel",
+      "price": 229,
+      "stock": 70,
+      "rating": 4.6,
+      "reviewCount": 63,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&q=80",
+      "description": "Lightweight moisture-wicking active training tee designed with 4-way stretch fabric to keep you cool and dry.",
+      "specs": [
+        "Sweat-Wicking Poly-Spandex",
+        "4-Way Stretch",
+        "Reflective Chest Decal",
+        "Quick-Dry Tech"
+      ]
+    },
+    {
+      "id": "prod_30",
+      "name": "Retro Pocket 400-in-1 Handheld Game Console",
+      "categoryId": "cat_electronics",
+      "categoryName": "Electronics & Gadgets",
+      "price": 299,
+      "stock": 90,
+      "rating": 4.9,
+      "reviewCount": 142,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80",
+      "description": "Pocket-sized retro game box with 400 built-in vintage 8-bit classic arcade games, 3.0-inch color screen, and TV cable connector.",
+      "specs": [
+        "400 Classic 8-Bit Games",
+        "3.0\" Color LCD",
+        "AV TV Output Cable Included",
+        "Rechargeable 1020mAh Battery"
+      ]
+    },
+    {
+      "id": "prod_31",
+      "name": "SpeedGlide Extended XXL RGB Gaming Mousepad",
+      "categoryId": "cat_electronics",
+      "categoryName": "Electronics & Gadgets",
+      "price": 329,
+      "stock": 45,
+      "rating": 4.7,
+      "reviewCount": 88,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=800&q=80",
+      "description": "Full-desk extended gaming mousepad with micro-textured precision cloth surface and stitched anti-fray borders.",
+      "specs": [
+        "800x300mm Desktop Coverage",
+        "Micro-Textured Speed Cloth",
+        "Non-Slip Natural Rubber Base",
+        "Anti-Fray Stitched Edges"
+      ]
+    },
+    {
+      "id": "prod_32",
+      "name": "FastCharge 3-in-1 Braided Multi-USB Cable",
+      "categoryId": "cat_electronics",
+      "categoryName": "Electronics & Gadgets",
+      "price": 299,
+      "stock": 120,
+      "rating": 4.8,
+      "reviewCount": 95,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=800&q=80",
+      "description": "Heavy-duty braided universal charging cable with Type-C, Lightning, and Micro-USB connectors for multi-device powering.",
+      "specs": [
+        "Type-C + Lightning + Micro USB",
+        "66W Fast Charging",
+        "Military-Grade Braided Nylon",
+        "Tangle-Free 1.2m Length"
+      ]
+    },
+    {
+      "id": "prod_33",
+      "name": "AeroLight Breathable Mesh Running Sneakers",
+      "categoryId": "cat_fashion",
+      "categoryName": "Fashion & Apparel",
+      "price": 349,
+      "stock": 60,
+      "rating": 4.8,
+      "reviewCount": 130,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80",
+      "description": "Ultra-lightweight mesh running and walking shoes with cushioned impact absorption sole and breathable knit body.",
+      "specs": [
+        "Air-Mesh Upper",
+        "Shock-Absorbing EVA Midsole",
+        "Anti-Skid Traction Pattern",
+        "Ultralight 180g"
+      ]
+    },
+    {
+      "id": "prod_34",
+      "name": "Casual Slip-On Canvas Loafers",
+      "categoryId": "cat_fashion",
+      "categoryName": "Fashion & Apparel",
+      "price": 379,
+      "stock": 45,
+      "rating": 4.7,
+      "reviewCount": 74,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=800&q=80",
+      "description": "Versatile low-profile slip-on casual shoes made of breathable washed canvas with cushioned insole and flexible rubber outsole.",
+      "specs": [
+        "Sturdy Washed Canvas",
+        "Memory Foam Footbed",
+        "Elastic Side Gores",
+        "Vulcanized Rubber Outsole"
+      ]
+    },
+    {
+      "id": "prod_35",
+      "name": "CloudComfort Ergonomic Slide Sandals",
+      "categoryId": "cat_fashion",
+      "categoryName": "Fashion & Apparel",
+      "price": 249,
+      "stock": 85,
+      "rating": 4.8,
+      "reviewCount": 109,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1603808033192-082d6919d3e1?w=800&q=80",
+      "description": "Super soft, waterproof molded slide sandals with contoured footbed for post-workout recovery and daily relaxation.",
+      "specs": [
+        "One-Piece High-Density EVA",
+        "Arch Support Contour",
+        "Waterproof & Quick-Drying",
+        "Textured Anti-Slip Grip"
+      ]
+    },
+    {
+      "id": "prod_36",
+      "name": "Retro Street Low-Top Skate Sneakers",
+      "categoryId": "cat_fashion",
+      "categoryName": "Fashion & Apparel",
+      "price": 389,
+      "stock": 55,
+      "rating": 4.7,
+      "reviewCount": 82,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&q=80",
+      "description": "Classic retro lace-up street sneakers with padded ankle support, dual-tone accent stripes, and grippy gum rubber sole.",
+      "specs": [
+        "Padded Collar & Tongue",
+        "Reinforced Toe Bumper",
+        "Flat Cotton Laces",
+        "Flexible Cupsole"
+      ]
     }
   ],
   "orders": [

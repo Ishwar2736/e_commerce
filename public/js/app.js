@@ -13,6 +13,8 @@
     products: [],
     categories: [],
     activeCategory: 'all',
+    maxPrice: null,
+    offerLabel: null,
     searchQuery: '',
     sortBy: 'featured',
     activeTab: 'store',
@@ -236,14 +238,22 @@
   function renderAuthNav() {
     const container = document.getElementById('auth-actions');
     const adminNavBtn = document.getElementById('nav-admin-btn');
+    const storeNavBtn = document.getElementById('nav-store-btn');
     const isAdmin = Boolean(state.user && state.user.role === 'admin');
 
-    // Only display Admin Panel button when logged in as admin
+    // Only display Admin Panel and Storefront switcher buttons when logged in as admin
     if (adminNavBtn) {
       if (isAdmin) {
         adminNavBtn.classList.remove('hidden');
       } else {
         adminNavBtn.classList.add('hidden');
+      }
+    }
+    if (storeNavBtn) {
+      if (isAdmin) {
+        storeNavBtn.classList.remove('hidden');
+      } else {
+        storeNavBtn.classList.add('hidden');
       }
     }
 
@@ -253,38 +263,55 @@
       const isPending = state.user.status === 'pending_approval';
 
       container.innerHTML = `
-        <div class="flex items-center gap-1.5 sm:gap-2">
-          <div class="text-right hidden sm:block leading-tight">
-            <div class="text-[10px] text-slate-300">Hello, ${escapeHtml(state.user.name.split(' ')[0])}</div>
-            <div class="text-xs font-bold text-white flex items-center justify-end gap-1">
-              Account & Lists
-              ${isAdmin ? '<span class="px-1.5 py-0.2 rounded text-[10px] bg-[#febd69] text-slate-900 font-extrabold">Admin</span>' : ''}
-              ${isPending ? '<span class="px-1.5 py-0.2 rounded text-[10px] bg-amber-400 text-slate-900 font-bold">Pending</span>' : ''}
-            </div>
-          </div>
-          <button onclick="window.openTrackOrderModal()" class="text-left text-white hover:outline hover:outline-1 hover:outline-white p-1 rounded leading-tight hidden lg:block" title="Returns & Orders">
+        <div class="flex items-center gap-2">
+          <button onclick="window.openTrackOrderModal()" class="text-left text-white hover:outline hover:outline-1 hover:outline-white p-1 rounded leading-tight hidden lg:block cursor-pointer" title="Returns & Orders">
             <div class="text-[10px] text-slate-300">Returns</div>
             <div class="text-xs font-bold text-white">& Orders</div>
           </button>
+
+          <!-- Circular Profile Avatar for Authenticated User -->
+          <div class="flex items-center gap-1.5 p-1 rounded-full sm:rounded-lg text-white">
+            <div class="w-8 h-8 rounded-full ${isAdmin ? 'bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-950 font-black border-2 border-white' : 'bg-slate-700 text-white font-bold border-2 border-slate-500'} flex items-center justify-center text-xs shadow-xs" title="${escapeHtml(state.user.name)} (${state.user.role})">
+              ${escapeHtml(state.user.name.charAt(0).toUpperCase())}
+            </div>
+            <div class="text-left hidden sm:block leading-tight">
+              <div class="text-[10px] text-slate-300">Hello, ${escapeHtml(state.user.name.split(' ')[0])}</div>
+              <div class="text-xs font-bold text-white flex items-center gap-1">
+                Account & Lists
+                ${isAdmin ? '<span class="px-1.5 py-0.2 rounded text-[9px] bg-[#febd69] text-slate-950 font-black uppercase">Admin</span>' : ''}
+                ${isPending ? '<span class="px-1.5 py-0.2 rounded text-[9px] bg-amber-400 text-slate-950 font-bold">Pending</span>' : ''}
+              </div>
+            </div>
+          </div>
+
           <button onclick="window.logout()" class="p-1.5 text-slate-300 hover:text-white rounded hover:bg-slate-800 border border-slate-700" title="Sign Out">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
           </button>
         </div>
       `;
     } else {
-      // Amazon Guest State: "Hello, sign in | Account & Lists"
+      // Guest State with Circular Login Option in Top Right Corner
       container.innerHTML = `
         <div class="flex items-center gap-2">
-          <button onclick="window.openAuthModal('login')" class="text-left text-white hover:outline hover:outline-1 hover:outline-white p-1 rounded leading-tight cursor-pointer" title="Sign In to your account">
-            <div class="text-[10px] text-slate-300">Hello, sign in</div>
-            <div class="text-xs font-bold text-white flex items-center gap-0.5">
-              Account & Lists
-              <svg class="w-3 h-3 text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
-            </div>
-          </button>
           <button onclick="window.openTrackOrderModal()" class="text-left text-white hover:outline hover:outline-1 hover:outline-white p-1 rounded leading-tight hidden lg:block cursor-pointer" title="Returns & Orders">
             <div class="text-[10px] text-slate-300">Returns</div>
             <div class="text-xs font-bold text-white">& Orders</div>
+          </button>
+
+          <!-- Sleek Circular Login Avatar in Top Right Corner -->
+          <button onclick="window.openAuthModal('login')" class="flex items-center gap-2 p-1 rounded-full sm:rounded-lg hover:outline hover:outline-1 hover:outline-white text-white transition cursor-pointer group" title="Account & Sign In">
+            <div class="w-8 h-8 rounded-full bg-[#232f3e] border-2 border-slate-500 group-hover:border-[#ff9900] group-hover:bg-[#37475a] flex items-center justify-center text-white shadow-xs transition">
+              <svg class="w-4 h-4 text-slate-300 group-hover:text-[#febd69]" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div class="text-left leading-tight hidden sm:block">
+              <div class="text-[10px] text-slate-300">Hello, sign in</div>
+              <div class="text-xs font-bold text-white flex items-center gap-0.5">
+                Account & Lists
+                <svg class="w-3 h-3 text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+              </div>
+            </div>
           </button>
         </div>
       `;
@@ -363,6 +390,9 @@
       if (state.activeCategory && state.activeCategory !== 'all') {
         query += `&category=${encodeURIComponent(state.activeCategory)}`;
       }
+      if (state.maxPrice) {
+        query += `&maxPrice=${encodeURIComponent(state.maxPrice)}`;
+      }
       if (state.searchQuery) {
         query += `&search=${encodeURIComponent(state.searchQuery)}`;
       }
@@ -389,7 +419,19 @@
       return;
     }
 
-    grid.innerHTML = state.products.map(p => {
+    const bannerHtml = state.maxPrice ? `
+      <div class="col-span-full bg-amber-50 border border-amber-300 p-3 rounded-xl flex items-center justify-between text-xs font-bold text-amber-950 shadow-2xs">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded bg-amber-500 text-slate-950 font-black text-[11px] uppercase">Special Offer</span>
+          <span>${escapeHtml(state.offerLabel || ('Deals Under ₹' + state.maxPrice))} &bull; ${state.products.length} products found</span>
+        </div>
+        <button onclick="window.filterCategory('all')" class="text-[#007185] hover:text-[#c7511f] font-bold underline">
+          View All Products &times;
+        </button>
+      </div>
+    ` : '';
+
+    grid.innerHTML = bannerHtml + state.products.map(p => {
       const isOutOfStock = p.stock <= 0;
       const mrp = Math.round(p.price * 1.35);
       const discountPercent = Math.round(((mrp - p.price) / mrp) * 100);
@@ -1923,40 +1965,33 @@
   window.openAuthModal = function (tab = 'login', prefillEmail = '') {
     const modal = document.getElementById('auth-modal');
     const content = document.getElementById('auth-modal-content');
-    const isPrefillAdmin = prefillEmail === 'admin@store.com';
-    const initialEmail = prefillEmail || '';
-    const initialPassword = isPrefillAdmin ? 'admin123' : '';
+    if (!modal || !content) return;
 
     content.innerHTML = `
       <div class="space-y-4">
         <div class="flex items-center justify-between">
           <div class="flex gap-2">
-            <button onclick="window.setAuthTab('login')" id="auth-tab-login" class="text-sm font-bold ${tab === 'login' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-slate-400'} pb-1">
+            <button onclick="window.setAuthTab('login')" id="auth-tab-login" class="text-sm font-bold ${tab === 'login' ? 'text-[#e47911] border-b-2 border-[#e47911]' : 'text-slate-400'} pb-1">
               Sign In
             </button>
-            <button onclick="window.setAuthTab('register')" id="auth-tab-register" class="text-sm font-bold ${tab === 'register' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-slate-400'} pb-1">
+            <button onclick="window.setAuthTab('register')" id="auth-tab-register" class="text-sm font-bold ${tab === 'register' ? 'text-[#e47911] border-b-2 border-[#e47911]' : 'text-slate-400'} pb-1">
               Register Customer
             </button>
           </div>
-          <button onclick="window.closeModals()" class="text-slate-400 hover:text-slate-600">✕</button>
+          <button onclick="window.closeModals()" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
         </div>
 
         <!-- Login Form -->
         <div id="auth-login-view" class="${tab === 'login' ? '' : 'hidden'} space-y-3">
-          ${isPrefillAdmin ? `
-            <div class="p-2.5 bg-purple-50 border border-purple-200 rounded-lg text-xs text-purple-800">
-              <strong>Admin Access:</strong> Sign in with administrator credentials to unlock the Admin Command Center.
-            </div>
-          ` : ''}
           <form onsubmit="window.handleLoginSubmit(event)" class="space-y-3 text-xs">
             <div>
               <label class="font-semibold text-slate-700">Email Address</label>
-              <input type="email" id="login-email" required value="${escapeHtml(initialEmail)}" placeholder="admin@store.com or customer email" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-lg">
+              <input type="email" id="login-email" required value="${escapeHtml(prefillEmail)}" placeholder="name@example.com" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#ff9900]">
             </div>
             <div>
               <label class="font-semibold text-slate-700">Password</label>
               <div class="relative mt-1">
-                <input type="password" id="login-password" required value="${escapeHtml(initialPassword)}" placeholder="Password" class="w-full p-2.5 pr-10 bg-slate-50 border border-slate-200 rounded-lg">
+                <input type="password" id="login-password" required placeholder="Enter password" class="w-full p-2.5 pr-10 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#ff9900]">
                 <button type="button" id="login-password-toggle" onclick="window.togglePasswordVisibility('login-password', 'login-password-toggle')" class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer text-slate-400 hover:text-slate-600 focus:outline-none" title="Show / Hide Password" aria-label="Show password">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400 hover:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -1965,15 +2000,8 @@
                 </button>
               </div>
             </div>
-            <button type="submit" class="w-full btn-primary text-xs py-2.5 font-bold shadow-md">Sign In &rarr;</button>
+            <button type="submit" class="w-full btn-amazon-cart text-xs py-2.5 font-bold shadow-xs">Sign In &rarr;</button>
           </form>
-
-          <div class="pt-3 border-t border-slate-200 space-y-1.5 text-center">
-            <p class="text-[11px] text-slate-400">Quick Administrator Access:</p>
-            <div class="flex justify-center gap-2">
-              <button type="button" onclick="window.fillLoginForm('admin@store.com', 'admin123')" class="px-3 py-1 rounded bg-purple-50 text-purple-700 border border-purple-200 text-[11px] font-semibold hover:bg-purple-100">Admin (admin@store.com)</button>
-            </div>
-          </div>
         </div>
 
         <!-- Register Form -->
@@ -2184,8 +2212,30 @@
 
   window.filterCategory = function (catId) {
     state.activeCategory = catId;
+    state.maxPrice = null;
+    state.offerLabel = null;
     renderCategoryPills();
     loadProducts();
+    const catalogElem = document.getElementById('category-pills');
+    if (catalogElem) {
+      catalogElem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  };
+
+  window.filterBudget = function (maxPrice, category = null, label = null) {
+    state.activeCategory = category || 'all';
+    state.maxPrice = maxPrice;
+    state.offerLabel = label;
+    state.searchQuery = '';
+    const searchInput = document.getElementById('global-search');
+    if (searchInput) searchInput.value = '';
+    renderCategoryPills();
+    loadProducts();
+    showToast(label ? `Filtered: ${label}` : `Showing deals under ₹${maxPrice}`, 'info');
+    const catalogElem = document.getElementById('category-pills');
+    if (catalogElem) {
+      catalogElem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
   };
 
   window.handleSearch = function (query) {

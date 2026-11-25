@@ -401,6 +401,25 @@ export default async function handler(req, res) {
           const q = search.toLowerCase();
           prods = prods.filter(p => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q));
         }
+
+        const maxPrice = reqUrl.searchParams.get('maxPrice');
+        const minPrice = reqUrl.searchParams.get('minPrice');
+        const offer = reqUrl.searchParams.get('offer');
+
+        if (maxPrice) {
+          const max = parseFloat(maxPrice);
+          if (!isNaN(max)) prods = prods.filter(p => p.price <= max);
+        }
+        if (minPrice) {
+          const min = parseFloat(minPrice);
+          if (!isNaN(min)) prods = prods.filter(p => p.price >= min);
+        }
+        if (offer === 'under299') {
+          prods = prods.filter(p => p.price <= 299);
+        }
+        if (offer === 'under399') {
+          prods = prods.filter(p => p.price <= 399);
+        }
         if (sortBy === 'price_asc') prods.sort((a, b) => a.price - b.price);
         if (sortBy === 'price_desc') prods.sort((a, b) => b.price - a.price);
         if (sortBy === 'rating') prods.sort((a, b) => b.rating - a.rating);

@@ -48,9 +48,6 @@
           <svg class="w-3.5 h-3.5 text-[#ff9900]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
           <span>Deliver to <strong class="text-white font-bold">India 560038</strong></span>
         </div>
-        <span class="text-slate-600">|</span>
-        <!-- Admin Access Shortcut -->
-        <button onclick="window.openAuthModal('login', 'admin@store.com')" class="text-[#febd69] hover:underline font-semibold">Admin (admin@store.com)</button>
       </div>
     </div>
   </div>
@@ -109,8 +106,8 @@
       <!-- Action Items & Navigation -->
       <div class="flex items-center gap-2 sm:gap-4 flex-shrink-0">
         
-        <!-- Storefront / Admin Panel switcher -->
-        <button id="nav-store-btn" onclick="window.switchTab('store')" class="text-xs font-bold text-white hover:text-[#febd69] px-2 py-1.5 rounded hover:outline hover:outline-1 hover:outline-white">
+        <!-- Storefront / Admin Panel switcher (Shown only when logged in as Admin) -->
+        <button id="nav-store-btn" onclick="window.switchTab('store')" class="hidden text-xs font-bold text-white hover:text-[#febd69] px-2 py-1.5 rounded hover:outline hover:outline-1 hover:outline-white">
           Storefront
         </button>
         <button id="nav-admin-btn" onclick="window.switchTab('admin')" class="hidden text-xs font-bold bg-[#febd69] text-slate-900 px-2.5 py-1.5 rounded shadow-sm hover:bg-[#f3a847] flex items-center gap-1">
@@ -181,10 +178,6 @@
       <button onclick="window.openTrackOrderModal()" class="text-sky-300 font-semibold flex items-center gap-1 px-1">
         <span>📦 Track Order</span>
       </button>
-      <div class="ml-auto hidden md:flex items-center gap-2 text-[11px]">
-        <span class="bg-[#007185] text-white px-2 py-0.5 rounded text-[10px] font-bold">PRIME</span>
-        <span class="text-slate-200">Join Prime Lite at <strong class="text-white font-extrabold">₹67/month*</strong></span>
-      </div>
     </div>
   </header>
 
@@ -258,7 +251,7 @@
           </div>
 
           <!-- Card 2: Apparel Under ₹299 (Clean Studio Off-White) -->
-          <div onclick="window.filterCategory('accessories')" class="group rounded-2xl overflow-hidden shadow-xs hover:shadow-md border border-slate-200 bg-[#f8f9fa] p-3.5 transition duration-200 flex flex-col justify-between cursor-pointer">
+          <div onclick="window.filterBudget(299, 'fashion', 'All Under ₹299: T-shirt & polos')" class="group rounded-2xl overflow-hidden shadow-xs hover:shadow-md border border-slate-200 bg-[#f8f9fa] p-3.5 transition duration-200 flex flex-col justify-between cursor-pointer">
             <div>
               <div class="text-xl font-black text-slate-900 leading-tight">All Under ₹299</div>
               <div class="text-xs text-slate-600 font-semibold mt-0.5">T-shirt & polos</div>
@@ -277,7 +270,7 @@
           </div>
 
           <!-- Card 3: Gaming & Tech Finds (Warm Peach / Terracotta) -->
-          <div onclick="window.filterCategory('electronics')" class="group rounded-2xl overflow-hidden shadow-xs hover:shadow-md border border-orange-200 bg-gradient-to-b from-[#fbeee6] via-[#fce4d6] to-[#f8d7c4] p-3.5 transition duration-200 flex flex-col justify-between cursor-pointer">
+          <div onclick="window.filterBudget(350, 'electronics', 'Starting ₹299: Fun finds for gaming & tech')" class="group rounded-2xl overflow-hidden shadow-xs hover:shadow-md border border-orange-200 bg-gradient-to-b from-[#fbeee6] via-[#fce4d6] to-[#f8d7c4] p-3.5 transition duration-200 flex flex-col justify-between cursor-pointer">
             <div>
               <div class="text-xl font-black text-[#9a3412] leading-tight">Starting ₹299</div>
               <div class="text-xs text-slate-700 font-semibold mt-0.5">Fun finds for gaming & tech</div>
@@ -314,7 +307,7 @@
           </div>
 
           <!-- Card 5: Shoes & Footwear (Warm Sand / Natural Tan) -->
-          <div onclick="window.filterCategory('accessories')" class="group rounded-2xl overflow-hidden shadow-xs hover:shadow-md border border-amber-200 bg-gradient-to-b from-[#fbf7f2] via-[#f5ede1] to-[#ebe0cf] p-3.5 transition duration-200 flex flex-col justify-between cursor-pointer">
+          <div onclick="window.filterBudget(399, 'fashion', 'Under ₹399: Shoes & sneakers')" class="group rounded-2xl overflow-hidden shadow-xs hover:shadow-md border border-amber-200 bg-gradient-to-b from-[#fbf7f2] via-[#f5ede1] to-[#ebe0cf] p-3.5 transition duration-200 flex flex-col justify-between cursor-pointer">
             <div>
               <div class="text-xl font-black text-[#5c3d2e] leading-tight">Under ₹399</div>
               <div class="text-xs text-slate-700 font-semibold mt-0.5">Shoes & sneakers</div>
