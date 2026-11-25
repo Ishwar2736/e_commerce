@@ -12,6 +12,8 @@ import {
   sendVerificationTokenLinkEmail,
   sendAccountRejectedEmail,
   sendOrderConfirmationEmail,
+  sendOrderCancellationEmail,
+  sendRefundConfirmationEmail,
   sendDeliveryStatusUpdateEmail,
   sendReturnConfirmationEmail
 } from './mailer.js';
@@ -172,7 +174,7 @@ export default async function handler(req, res) {
         };
 
         db.addUser(newUser);
-        sendRegistrationPendingEmail(newUser);
+        await sendRegistrationPendingEmail(newUser);
 
         return sendJson(res, 201, {
           success: true,
@@ -255,7 +257,7 @@ export default async function handler(req, res) {
           verificationToken: null
         });
 
-        sendAccountApprovedEmail(updated, baseUrl);
+        await sendAccountApprovedEmail(updated, baseUrl);
         return sendJson(res, 200, {
           success: true,
           message: 'Email verified successfully! You may now sign in.',
@@ -320,7 +322,7 @@ export default async function handler(req, res) {
           rejectionReason: null
         });
 
-        const emailRecord = sendAccountApprovedEmail(updated, baseUrl);
+        const emailRecord = await sendAccountApprovedEmail(updated, baseUrl);
         return sendJson(res, 200, {
           success: true,
           message: `Customer ${updated.name} approved! Activation email dispatched.`,
@@ -340,7 +342,7 @@ export default async function handler(req, res) {
         if (!target) return sendError(res, 404, 'Customer not found');
 
         const updated = db.updateUser(customerId, { status: 'rejected', rejectionReason: reason });
-        sendAccountRejectedEmail(updated, reason);
+        await sendAccountRejectedEmail(updated, reason);
 
         return sendJson(res, 200, { success: true, message: 'Customer rejected.', customer: updated });
       }
@@ -355,7 +357,7 @@ export default async function handler(req, res) {
         const token = target.verificationToken || `tok_${crypto.randomBytes(24).toString('hex')}`;
         db.updateUser(customerId, { verificationToken: token });
 
-        const emailRecord = sendVerificationTokenLinkEmail(target, token, baseUrl);
+        const emailRecord = await sendVerificationTokenLinkEmail(target, token, baseUrl);
         return sendJson(res, 200, { success: true, message: `Verification email sent.`, emailSent: emailRecord });
       }
 
@@ -618,7 +620,7 @@ export default async function handler(req, res) {
         };
         db.addOrder(order);
 
-        sendOrderConfirmationEmail(order, baseUrl);
+        await sendOrderConfirmationEmail(order, baseUrl);
         return sendJson(res, 201, { success: true, order, payment });
       }
 
@@ -674,7 +676,16 @@ export default async function handler(req, res) {
           trackingHistory: updatedHistory
         });
 
-        sendReturnConfirmationEmail(updated, returnRecord, baseUrl);
+        if (returnRecord.resolution === 'refund') {
+          await sendRefundConfirmationEmail(updated, {
+            amount: updated.totalAmount,
+            reason: returnRecord.reason,
+            refundId: returnRecord.returnId
+          }, baseUrl);
+        } else {
+          await sendReturnConfirmationEmail(updated, returnRecord, baseUrl);
+        }
+
         return sendJson(res, 200, { success: true, returnRecord, order: updated });
       }
 
@@ -695,6 +706,7 @@ export default async function handler(req, res) {
         });
         if (order.paymentId) db.updatePayment(order.paymentId, { status: 'refunded' });
 
+        await sendOrderCancellationEmail(updated, baseUrl);
         return sendJson(res, 200, { success: true, order: updated });
       }
 
@@ -705,12 +717,24 @@ export default async function handler(req, res) {
         const order = db.getOrderById(orderId);
         if (!order) return sendError(res, 404, 'Order not found');
 
-        const updated = db.updateOrder(orderId, {
+        const updateData = {
           orderStatus: body.status,
           trackingHistory: [...order.trackingHistory, { status: body.status, timestamp: new Date().toISOString(), note: body.note || 'Status updated.', location: 'Logistics Center' }]
-        });
+        };
 
-        sendDeliveryStatusUpdateEmail(updated, body.status, body.note, baseUrl);
+        if (body.status === 'cancelled') {
+          updateData.paymentStatus = 'refunded';
+          if (order.paymentId) db.updatePayment(order.paymentId, { status: 'refunded' });
+        }
+
+        const updated = db.updateOrder(orderId, updateData);
+
+        if (body.status === 'cancelled') {
+          await sendOrderCancellationEmail(updated, baseUrl);
+        } else {
+          await sendDeliveryStatusUpdateEmail(updated, body.status, body.note, baseUrl);
+        }
+
         return sendJson(res, 200, { success: true, order: updated });
       }
 
@@ -722,7 +746,18 @@ export default async function handler(req, res) {
 
       if (pathname.match(/^\/api\/admin\/payments\/([^/]+)\/refund$/) && method === 'POST') {
         if (!user || user.role !== 'admin') return sendError(res, 403, 'Admin required');
-        const updated = db.updatePayment(pathname.split('/')[4], { status: 'refunded' });
+        const paymentId = pathname.split('/')[4];
+        const updated = db.updatePayment(paymentId, { status: 'refunded' });
+
+        const order = db.getOrders().find(o => o.paymentId === paymentId || o.id === updated?.orderId);
+        if (order) {
+          await sendRefundConfirmationEmail(order, {
+            amount: updated.amount,
+            reason: 'Payment refund processed by store administrator',
+            refundId: updated.id
+          }, baseUrl);
+        }
+
         return sendJson(res, 200, { success: true, payment: updated });
       }
 

@@ -1639,7 +1639,7 @@
             <div>
               <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">Return Confirmed</span>
               <h3 class="text-xl font-black text-slate-900 mt-2">Return Request #${data.returnRecord.returnId}</h3>
-              <p class="text-xs text-slate-500 mt-1">A confirmation acknowledgement has been dispatched to your mailbox.</p>
+              <p class="text-xs text-slate-500 mt-1">A confirmation acknowledgement email has been dispatched to your email address.</p>
             </div>
 
             <div class="max-w-md mx-auto bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs text-left space-y-2">
@@ -1825,9 +1825,10 @@
     if (!confirm('Are you sure you want to cancel this order? Stock will be restored and payment refunded.')) return;
     try {
       await api(`/api/orders/${orderId}/cancel`, { method: 'POST' });
-      showToast('Order cancelled and inventory restored.', 'success');
+      showToast('Order cancelled. Refund initiated & confirmation email sent.', 'success');
       window.trackOrderById(orderId);
       await loadProducts();
+      await loadEmails();
     } catch (err) {
       showToast(err.message, 'error');
     }
