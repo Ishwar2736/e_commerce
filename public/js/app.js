@@ -2600,7 +2600,7 @@
       }
     } catch (err) {
       if (err.data?.code === 'PENDING_APPROVAL') {
-        showToast('Your account is awaiting manual administrator verification.', 'warning');
+        showToast('Registration successful! Waiting for admin approval.', 'warning');
       } else {
         showToast(err.message, 'error');
       }
@@ -2627,12 +2627,12 @@
         })
       });
 
-      showToast('Registration submitted! Admin approval email pending.', 'success');
+      showToast('Registration successful! Waiting for admin approval.', 'success');
       window.closeModals();
       await loadEmails();
 
       // Show instruction dialog
-      alert(`Registration Successful!\n\nStatus: PENDING MANUAL ADMIN APPROVAL\n\nAn acknowledgement email has been dispatched to ${email}.\nAs Administrator, you can open the Admin Panel > "Manage Customers" to review and approve this account.`);
+      alert('Registration successful! Waiting for admin approval.');
     } catch (err) {
       showToast(err.message, 'error');
     }

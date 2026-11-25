@@ -160,7 +160,7 @@ export default async function handler(req, res) {
         return sendJson(res, 201, {
           success: true,
           status: 'pending_approval',
-          message: 'Account registered successfully! Pending manual administrator verification.',
+          message: 'Registration successful! Waiting for admin approval.',
           user: {
             id: newUser.id,
             name: newUser.name,
@@ -190,7 +190,7 @@ export default async function handler(req, res) {
           if (foundUser.status === 'pending_approval') {
             return sendError(res, 403, 'Account Pending Approval', {
               code: 'PENDING_APPROVAL',
-              message: 'Your registration is pending manual approval by the administrator.'
+              message: 'Registration successful! Waiting for admin approval.'
             });
           }
           if (foundUser.status === 'rejected') {
