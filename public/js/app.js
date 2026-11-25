@@ -147,6 +147,19 @@
   // Toast Notification
   function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    // Check if an identical toast message is already showing to prevent ugly multi-stacking
+    const existing = Array.from(container.children).find(c => c.textContent.includes(message));
+    if (existing) {
+      return;
+    }
+
+    // Keep at most 2 toasts active simultaneously
+    while (container.children.length >= 2) {
+      container.removeChild(container.firstChild);
+    }
+
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     
@@ -165,7 +178,7 @@
     setTimeout(() => {
       toast.classList.remove('active');
       setTimeout(() => toast.remove(), 300);
-    }, 4000);
+    }, 3000);
   }
 
   // --- INITIALIZATION ---

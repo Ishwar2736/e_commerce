@@ -833,6 +833,139 @@
         "Flat Cotton Laces",
         "Flexible Cupsole"
       ]
+    },
+    {
+      "id": "prod_37",
+      "name": "GlowFire USB Desktop RGB Condenser Gaming Microphone",
+      "categoryId": "cat_electronics",
+      "categoryName": "Electronics & Gadgets",
+      "price": 349,
+      "stock": 65,
+      "rating": 4.7,
+      "reviewCount": 38,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&q=80",
+      "description": "Plug-and-play USB condenser microphone with dynamic RGB illumination, tap-to-mute button, and crystal-clear voice pickup for streaming, Discord, and multiplayer gaming.",
+      "specs": [
+        "Cardioid Pickup Pattern",
+        "RGB Gradient Lighting",
+        "Tap-to-Mute Sensor",
+        "Zero-Latency 3.5mm Jack"
+      ]
+    },
+    {
+      "id": "prod_38",
+      "name": "HyperGrip 2.4GHz Wireless Silent Gaming Mouse",
+      "categoryId": "cat_electronics",
+      "categoryName": "Electronics & Gadgets",
+      "price": 349,
+      "stock": 90,
+      "rating": 4.8,
+      "reviewCount": 82,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=800&q=80",
+      "description": "Ergonomic wireless gaming mouse featuring silent optical switches, 3200 DPI adjustable optical sensor, and rechargeable lithium battery.",
+      "specs": [
+        "3200 DPI Adjustable Sensor",
+        "Ultra-Quiet Click Switches",
+        "Rechargeable 500mAh Battery",
+        "7-Color Breathing LED"
+      ]
+    },
+    {
+      "id": "prod_39",
+      "name": "DualTrigger Universal Mobile Gaming Controller Grips",
+      "categoryId": "cat_electronics",
+      "categoryName": "Electronics & Gadgets",
+      "price": 299,
+      "stock": 120,
+      "rating": 4.6,
+      "reviewCount": 54,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80",
+      "description": "Mechanical L1/R1 responsive trigger grips for Android and iPhone. Highly sensitive capacitive silicone pads for BGMI, Call of Duty, and PUBG Mobile.",
+      "specs": [
+        "Conductive Alloy Triggers",
+        "Zero Latency Mechanical Click",
+        "Universal Phone Clamp",
+        "Ergonomic Matte Grip"
+      ]
+    },
+    {
+      "id": "prod_40",
+      "name": "StrikeBass 3.5mm Low-Latency In-Ear Gaming Earphones",
+      "categoryId": "cat_electronics",
+      "categoryName": "Electronics & Gadgets",
+      "price": 349,
+      "stock": 75,
+      "rating": 4.7,
+      "reviewCount": 46,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&q=80",
+      "description": "Precision in-ear gaming earphones with dual microphones (detachable boom mic + inline mic), 10mm dynamic drivers, and memory foam noise-isolating ear tips.",
+      "specs": [
+        "Dual Microphones",
+        "10mm Bass Drivers",
+        "L-Shaped 3.5mm Gold-Plated Jack",
+        "Tangle-Free Braided Wire"
+      ]
+    },
+    {
+      "id": "prod_41",
+      "name": "AeroBreeze USB Portable RGB Cooling Fan",
+      "categoryId": "cat_electronics",
+      "categoryName": "Electronics & Gadgets",
+      "price": 299,
+      "stock": 85,
+      "rating": 4.5,
+      "reviewCount": 29,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&q=80",
+      "description": "Compact 3-speed desktop cooling fan with flexible 360-degree rotation and multi-color LED glow. Keeps your gaming setup cool and stylish.",
+      "specs": [
+        "3 Speed Settings",
+        "Whisper Quiet < 25dB",
+        "USB-Powered 5V",
+        "360-Degree Adjustable Angle"
+      ]
+    },
+    {
+      "id": "prod_42",
+      "name": "Retro Arcade Brick Game Pocket Console (99 in 1)",
+      "categoryId": "cat_electronics",
+      "categoryName": "Electronics & Gadgets",
+      "price": 199,
+      "stock": 140,
+      "rating": 4.7,
+      "reviewCount": 110,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1551103782-8ab07afd45c1?w=800&q=80",
+      "description": "Classic nostalgic handheld brick game console featuring 99 retro puzzle games including Tank, Racing, and Brick Shooter with sound effects.",
+      "specs": [
+        "99 Built-in Classic Games",
+        "High-Contrast LCD Display",
+        "Requires 2x AA Batteries",
+        "Ultra-Portable Lightweight Body"
+      ]
+    },
+    {
+      "id": "prod_43",
+      "name": "CyberHub 4-Port High-Speed USB 3.0 Splitter",
+      "categoryId": "cat_electronics",
+      "categoryName": "Electronics & Gadgets",
+      "price": 329,
+      "stock": 95,
+      "rating": 4.8,
+      "reviewCount": 63,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1618424181497-157f25b6ddd5?w=800&q=80",
+      "description": "Sleek aluminum 4-port USB 3.0 data hub with individual LED power switches and 5Gbps transfer speeds for keyboard, mouse, and game controllers.",
+      "specs": [
+        "4x USB 3.0 5Gbps Ports",
+        "Individual Power Switches with LEDs",
+        "Plug & Play (Windows/Mac/Linux)",
+        "Overcurrent Protection"
+      ]
     }
   ],
   "orders": [

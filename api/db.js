@@ -11,6 +11,7 @@ const __dirname = path.dirname(__filename);
 const isVercel = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
 const DATA_DIR = isVercel ? path.join(os.tmpdir(), 'omnistore_data') : path.join(__dirname, '..', 'data');
 const DB_FILE = path.join(DATA_DIR, 'store.json');
+const SEED_FILE = path.join(__dirname, '..', 'data', 'store.json');
 
 try {
   if (!fs.existsSync(DATA_DIR)) {
@@ -98,61 +99,61 @@ function getInitialData() {
     ],
     categories: [
       {
-        id: 'cat_electronics',
-        name: 'Electronics & Gadgets',
-        slug: 'electronics',
-        description: 'Keyboards, gaming mice, fast chargers, and computing accessories.',
-        icon: 'Cpu'
+            "id": "cat_electronics",
+            "name": "Electronics & Gadgets",
+            "slug": "electronics",
+            "description": "Keyboards, gaming mice, fast chargers, and computing accessories.",
+            "icon": "Cpu"
       },
       {
-        id: 'cat_wearables',
-        name: 'Wearables & Watches',
-        slug: 'wearables',
-        description: 'Smartwatches, fitness bands, smart health rings, and connected devices.',
-        icon: 'Watch'
+            "id": "cat_wearables",
+            "name": "Wearables & Watches",
+            "slug": "wearables",
+            "description": "Smartwatches, fitness bands, smart health rings, and connected devices.",
+            "icon": "Watch"
       },
       {
-        id: 'cat_audio',
-        name: 'Audio & Sound',
-        slug: 'audio',
-        description: 'ANC headphones, true wireless earbuds, portable speakers, and soundbars.',
-        icon: 'Headphones'
+            "id": "cat_audio",
+            "name": "Audio & Sound",
+            "slug": "audio",
+            "description": "ANC headphones, true wireless earbuds, portable speakers, and soundbars.",
+            "icon": "Headphones"
       },
       {
-        id: 'cat_fashion',
-        name: 'Fashion & Apparel',
-        slug: 'fashion',
-        description: 'Designer apparel, luxury footwear, and seasonal accessories.',
-        icon: 'Shirt'
+            "id": "cat_fashion",
+            "name": "Fashion & Apparel",
+            "slug": "fashion",
+            "description": "Designer apparel, luxury footwear, duffels, and accessories.",
+            "icon": "Shirt"
       },
       {
-        id: 'cat_home',
-        name: 'Home & Kitchen',
-        slug: 'home-living',
-        description: 'Minimalist furniture, smart home decor, and ambient lighting.',
-        icon: 'Home'
+            "id": "cat_home",
+            "name": "Home & Kitchen",
+            "slug": "home-living",
+            "description": "Minimalist lighting, aroma diffusers, and coffee makers.",
+            "icon": "Home"
       },
       {
-        id: 'cat_beauty',
-        name: 'Beauty & Wellness',
-        slug: 'beauty',
-        description: 'Organic skincare, fragrances, and daily personal care essentials.',
-        icon: 'Sparkles'
+            "id": "cat_beauty",
+            "name": "Beauty & Wellness",
+            "slug": "beauty",
+            "description": "Organic skincare, restorative serums, and personal care.",
+            "icon": "Sparkles"
       },
       {
-        id: 'cat_sports',
-        name: 'Sports & Outdoors',
-        slug: 'sports',
-        description: 'Fitness equipment, athletic wear, and outdoor adventure gear.',
-        icon: 'Activity'
+            "id": "cat_sports",
+            "name": "Sports & Outdoors",
+            "slug": "sports",
+            "description": "Running shoes, fitness gear, and yoga accessories.",
+            "icon": "Activity"
       }
-    ],
+],
     products: [
       {
             "id": "prod_1",
             "name": "AuraPulse ANC Wireless Headphones",
-            "categoryId": "cat_electronics",
-            "categoryName": "Electronics & Gadgets",
+            "categoryId": "cat_audio",
+            "categoryName": "Audio & Sound",
             "price": 2999,
             "stock": 35,
             "rating": 4.8,
@@ -170,8 +171,8 @@ function getInitialData() {
       {
             "id": "prod_2",
             "name": "Horizon Pro Smartwatch Ultra",
-            "categoryId": "cat_electronics",
-            "categoryName": "Electronics & Gadgets",
+            "categoryId": "cat_wearables",
+            "categoryName": "Wearables & Watches",
             "price": 4499,
             "stock": 20,
             "rating": 4.9,
@@ -322,8 +323,8 @@ function getInitialData() {
       {
             "id": "prod_10",
             "name": "SonicBoom Portable Bluetooth Speaker",
-            "categoryId": "cat_electronics",
-            "categoryName": "Electronics & Gadgets",
+            "categoryId": "cat_audio",
+            "categoryName": "Audio & Sound",
             "price": 2499,
             "stock": 30,
             "rating": 4.7,
@@ -526,6 +527,443 @@ function getInitialData() {
                   "100% Pure & Cold-Pressed",
                   "No Mineral Oils or Silicones",
                   "Ayurvedic Recipe"
+            ]
+      },
+      {
+            "id": "prod_21",
+            "name": "Apex Pulse Pro AMOLED Fitness Band",
+            "categoryId": "cat_wearables",
+            "categoryName": "Wearables & Watches",
+            "price": 1899,
+            "stock": 45,
+            "rating": 4.7,
+            "reviewCount": 64,
+            "featured": true,
+            "image": "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=800&q=80",
+            "description": "Vibrant 1.47-inch curved AMOLED display, continuous SpO2 oxygen and heart rate monitoring, 14-day battery, and 5ATM water resistance.",
+            "specs": [
+                  "1.47\" AMOLED Display",
+                  "14-Day Battery Life",
+                  "5ATM Water Resistant",
+                  "120 Sports Modes"
+            ]
+      },
+      {
+            "id": "prod_22",
+            "name": "Titan Wave Bluetooth Calling Smartwatch",
+            "categoryId": "cat_wearables",
+            "categoryName": "Wearables & Watches",
+            "price": 2499,
+            "stock": 30,
+            "rating": 4.8,
+            "reviewCount": 51,
+            "featured": true,
+            "image": "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&q=80",
+            "description": "Ultra-clear 1.96\" HD display with Bluetooth calling, built-in AI voice assistant, metal bezel finish, and 100+ customizable watch faces.",
+            "specs": [
+                  "Bluetooth HD Calling",
+                  "1.96\" Full-Touch Screen",
+                  "AI Voice Assistant",
+                  "IP68 Dust & Water Proof"
+            ]
+      },
+      {
+            "id": "prod_23",
+            "name": "Aura Ring Smart Health & Sleep Tracker",
+            "categoryId": "cat_wearables",
+            "categoryName": "Wearables & Watches",
+            "price": 3799,
+            "stock": 25,
+            "rating": 4.9,
+            "reviewCount": 33,
+            "featured": false,
+            "image": "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&q=80",
+            "description": "Aerospace titanium smart ring tracking sleep stages, skin temperature fluctuations, recovery index, and HRV in an ultra-discreet lightweight profile.",
+            "specs": [
+                  "Aerospace Titanium",
+                  "24/7 Temperature & HRV",
+                  "7-Day Battery",
+                  "Water Resistant to 50m"
+            ]
+      },
+      {
+            "id": "prod_24",
+            "name": "PodMax Active Spatial ANC Earbuds",
+            "categoryId": "cat_audio",
+            "categoryName": "Audio & Sound",
+            "price": 1999,
+            "stock": 50,
+            "rating": 4.8,
+            "reviewCount": 89,
+            "featured": true,
+            "image": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&q=80",
+            "description": "45dB active noise cancelling with transparency mode, 10mm dynamic titanium drivers, quad ENC microphones, and 36-hour total battery.",
+            "specs": [
+                  "45dB Hybrid ANC",
+                  "36hr Total Playtime",
+                  "Wireless Charging",
+                  "Quad Mic ENC"
+            ]
+      },
+      {
+            "id": "prod_25",
+            "name": "BassPro Cinema 120W Dolby Soundbar",
+            "categoryId": "cat_audio",
+            "categoryName": "Audio & Sound",
+            "price": 4499,
+            "stock": 18,
+            "rating": 4.9,
+            "reviewCount": 47,
+            "featured": false,
+            "image": "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=800&q=80",
+            "description": "Immersive 120W peak power 2.1 channel TV soundbar with dedicated wired subwoofer, HDMI ARC, Optical input, and multi-EQ cinema modes.",
+            "specs": [
+                  "120W Peak Output",
+                  "Deep Bass Subwoofer",
+                  "HDMI ARC & Optical",
+                  "Bluetooth 5.3"
+            ]
+      },
+      {
+            "id": "prod_26",
+            "name": "Classic Combed Cotton Crewneck T-Shirt",
+            "categoryId": "cat_fashion",
+            "categoryName": "Fashion & Apparel",
+            "price": 199,
+            "stock": 80,
+            "rating": 4.6,
+            "reviewCount": 112,
+            "featured": true,
+            "image": "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800&q=80",
+            "description": "100% combed breathable cotton everyday crewneck t-shirt. Pre-shrunk bio-washed fabric for all-day comfort.",
+            "specs": [
+                  "100% Breathable Cotton",
+                  "Pre-Shrunk Bio-Washed",
+                  "Ribbed Crew Collar",
+                  "Regular Everyday Fit"
+            ]
+      },
+      {
+            "id": "prod_27",
+            "name": "Regular Fit Pique Solid Polo T-Shirt",
+            "categoryId": "cat_fashion",
+            "categoryName": "Fashion & Apparel",
+            "price": 279,
+            "stock": 65,
+            "rating": 4.7,
+            "reviewCount": 94,
+            "featured": true,
+            "image": "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=800&q=80",
+            "description": "Smart casual polo shirt crafted from breathable honeycomb pique cotton blend with ribbed collar and button placket.",
+            "specs": [
+                  "Durable Honeycomb Pique",
+                  "2-Button Placket",
+                  "Anti-Pilling Finish",
+                  "Machine Washable"
+            ]
+      },
+      {
+            "id": "prod_28",
+            "name": "Vintage Graphic Print Oversized Tee",
+            "categoryId": "cat_fashion",
+            "categoryName": "Fashion & Apparel",
+            "price": 249,
+            "stock": 50,
+            "rating": 4.8,
+            "reviewCount": 78,
+            "featured": false,
+            "image": "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800&q=80",
+            "description": "Urban streetwear graphic printed t-shirt with relaxed drop shoulder fit and premium screenprinted typography.",
+            "specs": [
+                  "180 GSM Heavy Fabric",
+                  "Distressed Screenprint",
+                  "Drop Shoulder Fit",
+                  "Soft Handfeel"
+            ]
+      },
+      {
+            "id": "prod_29",
+            "name": "Dry-Fit Athletic Stretch Training T-Shirt",
+            "categoryId": "cat_fashion",
+            "categoryName": "Fashion & Apparel",
+            "price": 229,
+            "stock": 70,
+            "rating": 4.6,
+            "reviewCount": 63,
+            "featured": false,
+            "image": "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&q=80",
+            "description": "Lightweight moisture-wicking active training tee designed with 4-way stretch fabric to keep you cool and dry.",
+            "specs": [
+                  "Sweat-Wicking Poly-Spandex",
+                  "4-Way Stretch",
+                  "Reflective Chest Decal",
+                  "Quick-Dry Tech"
+            ]
+      },
+      {
+            "id": "prod_30",
+            "name": "Retro Pocket 400-in-1 Handheld Game Console",
+            "categoryId": "cat_electronics",
+            "categoryName": "Electronics & Gadgets",
+            "price": 299,
+            "stock": 90,
+            "rating": 4.9,
+            "reviewCount": 142,
+            "featured": true,
+            "image": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80",
+            "description": "Pocket-sized retro game box with 400 built-in vintage 8-bit classic arcade games, 3.0-inch color screen, and TV cable connector.",
+            "specs": [
+                  "400 Classic 8-Bit Games",
+                  "3.0\" Color LCD",
+                  "AV TV Output Cable Included",
+                  "Rechargeable 1020mAh Battery"
+            ]
+      },
+      {
+            "id": "prod_31",
+            "name": "SpeedGlide Extended XXL RGB Gaming Mousepad",
+            "categoryId": "cat_electronics",
+            "categoryName": "Electronics & Gadgets",
+            "price": 329,
+            "stock": 45,
+            "rating": 4.7,
+            "reviewCount": 88,
+            "featured": false,
+            "image": "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=800&q=80",
+            "description": "Full-desk extended gaming mousepad with micro-textured precision cloth surface and stitched anti-fray borders.",
+            "specs": [
+                  "800x300mm Desktop Coverage",
+                  "Micro-Textured Speed Cloth",
+                  "Non-Slip Natural Rubber Base",
+                  "Anti-Fray Stitched Edges"
+            ]
+      },
+      {
+            "id": "prod_32",
+            "name": "FastCharge 3-in-1 Braided Multi-USB Cable",
+            "categoryId": "cat_electronics",
+            "categoryName": "Electronics & Gadgets",
+            "price": 299,
+            "stock": 120,
+            "rating": 4.8,
+            "reviewCount": 95,
+            "featured": true,
+            "image": "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=800&q=80",
+            "description": "Heavy-duty braided universal charging cable with Type-C, Lightning, and Micro-USB connectors for multi-device powering.",
+            "specs": [
+                  "Type-C + Lightning + Micro USB",
+                  "66W Fast Charging",
+                  "Military-Grade Braided Nylon",
+                  "Tangle-Free 1.2m Length"
+            ]
+      },
+      {
+            "id": "prod_33",
+            "name": "AeroLight Breathable Mesh Running Sneakers",
+            "categoryId": "cat_fashion",
+            "categoryName": "Fashion & Apparel",
+            "price": 349,
+            "stock": 60,
+            "rating": 4.8,
+            "reviewCount": 130,
+            "featured": true,
+            "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80",
+            "description": "Ultra-lightweight mesh running and walking shoes with cushioned impact absorption sole and breathable knit body.",
+            "specs": [
+                  "Air-Mesh Upper",
+                  "Shock-Absorbing EVA Midsole",
+                  "Anti-Skid Traction Pattern",
+                  "Ultralight 180g"
+            ]
+      },
+      {
+            "id": "prod_34",
+            "name": "Casual Slip-On Canvas Loafers",
+            "categoryId": "cat_fashion",
+            "categoryName": "Fashion & Apparel",
+            "price": 379,
+            "stock": 45,
+            "rating": 4.7,
+            "reviewCount": 74,
+            "featured": false,
+            "image": "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=800&q=80",
+            "description": "Versatile low-profile slip-on casual shoes made of breathable washed canvas with cushioned insole and flexible rubber outsole.",
+            "specs": [
+                  "Sturdy Washed Canvas",
+                  "Memory Foam Footbed",
+                  "Elastic Side Gores",
+                  "Vulcanized Rubber Outsole"
+            ]
+      },
+      {
+            "id": "prod_35",
+            "name": "CloudComfort Ergonomic Slide Sandals",
+            "categoryId": "cat_fashion",
+            "categoryName": "Fashion & Apparel",
+            "price": 249,
+            "stock": 85,
+            "rating": 4.8,
+            "reviewCount": 109,
+            "featured": true,
+            "image": "https://images.unsplash.com/photo-1603808033192-082d6919d3e1?w=800&q=80",
+            "description": "Super soft, waterproof molded slide sandals with contoured footbed for post-workout recovery and daily relaxation.",
+            "specs": [
+                  "One-Piece High-Density EVA",
+                  "Arch Support Contour",
+                  "Waterproof & Quick-Drying",
+                  "Textured Anti-Slip Grip"
+            ]
+      },
+      {
+            "id": "prod_36",
+            "name": "Retro Street Low-Top Skate Sneakers",
+            "categoryId": "cat_fashion",
+            "categoryName": "Fashion & Apparel",
+            "price": 389,
+            "stock": 55,
+            "rating": 4.7,
+            "reviewCount": 82,
+            "featured": false,
+            "image": "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&q=80",
+            "description": "Classic retro lace-up street sneakers with padded ankle support, dual-tone accent stripes, and grippy gum rubber sole.",
+            "specs": [
+                  "Padded Collar & Tongue",
+                  "Reinforced Toe Bumper",
+                  "Flat Cotton Laces",
+                  "Flexible Cupsole"
+            ]
+      },
+      {
+            "id": "prod_37",
+            "name": "GlowFire USB Desktop RGB Condenser Gaming Microphone",
+            "categoryId": "cat_electronics",
+            "categoryName": "Electronics & Gadgets",
+            "price": 349,
+            "stock": 65,
+            "rating": 4.7,
+            "reviewCount": 38,
+            "featured": true,
+            "image": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&q=80",
+            "description": "Plug-and-play USB condenser microphone with dynamic RGB illumination, tap-to-mute button, and crystal-clear voice pickup for streaming, Discord, and multiplayer gaming.",
+            "specs": [
+                  "Cardioid Pickup Pattern",
+                  "RGB Gradient Lighting",
+                  "Tap-to-Mute Sensor",
+                  "Zero-Latency 3.5mm Jack"
+            ]
+      },
+      {
+            "id": "prod_38",
+            "name": "HyperGrip 2.4GHz Wireless Silent Gaming Mouse",
+            "categoryId": "cat_electronics",
+            "categoryName": "Electronics & Gadgets",
+            "price": 349,
+            "stock": 90,
+            "rating": 4.8,
+            "reviewCount": 82,
+            "featured": true,
+            "image": "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=800&q=80",
+            "description": "Ergonomic wireless gaming mouse featuring silent optical switches, 3200 DPI adjustable optical sensor, and rechargeable lithium battery.",
+            "specs": [
+                  "3200 DPI Adjustable Sensor",
+                  "Ultra-Quiet Click Switches",
+                  "Rechargeable 500mAh Battery",
+                  "7-Color Breathing LED"
+            ]
+      },
+      {
+            "id": "prod_39",
+            "name": "DualTrigger Universal Mobile Gaming Controller Grips",
+            "categoryId": "cat_electronics",
+            "categoryName": "Electronics & Gadgets",
+            "price": 299,
+            "stock": 120,
+            "rating": 4.6,
+            "reviewCount": 54,
+            "featured": false,
+            "image": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80",
+            "description": "Mechanical L1/R1 responsive trigger grips for Android and iPhone. Highly sensitive capacitive silicone pads for BGMI, Call of Duty, and PUBG Mobile.",
+            "specs": [
+                  "Conductive Alloy Triggers",
+                  "Zero Latency Mechanical Click",
+                  "Universal Phone Clamp",
+                  "Ergonomic Matte Grip"
+            ]
+      },
+      {
+            "id": "prod_40",
+            "name": "StrikeBass 3.5mm Low-Latency In-Ear Gaming Earphones",
+            "categoryId": "cat_electronics",
+            "categoryName": "Electronics & Gadgets",
+            "price": 349,
+            "stock": 75,
+            "rating": 4.7,
+            "reviewCount": 46,
+            "featured": false,
+            "image": "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&q=80",
+            "description": "Precision in-ear gaming earphones with dual microphones (detachable boom mic + inline mic), 10mm dynamic drivers, and memory foam noise-isolating ear tips.",
+            "specs": [
+                  "Dual Microphones",
+                  "10mm Bass Drivers",
+                  "L-Shaped 3.5mm Gold-Plated Jack",
+                  "Tangle-Free Braided Wire"
+            ]
+      },
+      {
+            "id": "prod_41",
+            "name": "AeroBreeze USB Portable RGB Cooling Fan",
+            "categoryId": "cat_electronics",
+            "categoryName": "Electronics & Gadgets",
+            "price": 299,
+            "stock": 85,
+            "rating": 4.5,
+            "reviewCount": 29,
+            "featured": false,
+            "image": "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&q=80",
+            "description": "Compact 3-speed desktop cooling fan with flexible 360-degree rotation and multi-color LED glow. Keeps your gaming setup cool and stylish.",
+            "specs": [
+                  "3 Speed Settings",
+                  "Whisper Quiet < 25dB",
+                  "USB-Powered 5V",
+                  "360-Degree Adjustable Angle"
+            ]
+      },
+      {
+            "id": "prod_42",
+            "name": "Retro Arcade Brick Game Pocket Console (99 in 1)",
+            "categoryId": "cat_electronics",
+            "categoryName": "Electronics & Gadgets",
+            "price": 199,
+            "stock": 140,
+            "rating": 4.7,
+            "reviewCount": 110,
+            "featured": false,
+            "image": "https://images.unsplash.com/photo-1551103782-8ab07afd45c1?w=800&q=80",
+            "description": "Classic nostalgic handheld brick game console featuring 99 retro puzzle games including Tank, Racing, and Brick Shooter with sound effects.",
+            "specs": [
+                  "99 Built-in Classic Games",
+                  "High-Contrast LCD Display",
+                  "Requires 2x AA Batteries",
+                  "Ultra-Portable Lightweight Body"
+            ]
+      },
+      {
+            "id": "prod_43",
+            "name": "CyberHub 4-Port High-Speed USB 3.0 Splitter",
+            "categoryId": "cat_electronics",
+            "categoryName": "Electronics & Gadgets",
+            "price": 329,
+            "stock": 95,
+            "rating": 4.8,
+            "reviewCount": 63,
+            "featured": false,
+            "image": "https://images.unsplash.com/photo-1618424181497-157f25b6ddd5?w=800&q=80",
+            "description": "Sleek aluminum 4-port USB 3.0 data hub with individual LED power switches and 5Gbps transfer speeds for keyboard, mouse, and game controllers.",
+            "specs": [
+                  "4x USB 3.0 5Gbps Ports",
+                  "Individual Power Switches with LEDs",
+                  "Plug & Play (Windows/Mac/Linux)",
+                  "Overcurrent Protection"
             ]
       }
 ],
