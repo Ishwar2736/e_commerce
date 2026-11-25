@@ -439,7 +439,7 @@ export default async function handler(req, res) {
         if (user.status !== 'approved') return sendError(res, 403, 'Account pending approval.');
 
         const body = await parseBody(req);
-        const { items, shippingAddress, paymentDetails } = body;
+        const { items, shippingAddress, paymentDetails, couponCode } = body;
 
         for (const item of items) {
           const product = db.getProductById(item.productId);
@@ -448,10 +448,38 @@ export default async function handler(req, res) {
           }
         }
 
+        const AVAILABLE_COUPONS = {
+          'WELCOME10': { type: 'percent', value: 10, minOrder: 0 },
+          'FESTIVE20': { type: 'percent', value: 20, minOrder: 0 },
+          'FLAT500': { type: 'flat', value: 500, minOrder: 1500 },
+          'FREESHIP': { type: 'shipping', value: 99, minOrder: 0 },
+          'MEGA50': { type: 'percent', value: 50, minOrder: 0 }
+        };
+
         const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const shippingFee = subtotal >= 999 ? 0 : 99;
-        const tax = parseFloat((subtotal * 0.18).toFixed(2));
-        const totalAmount = parseFloat((subtotal + shippingFee + tax).toFixed(2));
+        let shippingFee = subtotal >= 999 ? 0 : 99;
+        let discount = 0;
+        let validCoupon = null;
+
+        if (couponCode && typeof couponCode === 'string') {
+          const cleanCode = couponCode.trim().toUpperCase();
+          const found = AVAILABLE_COUPONS[cleanCode];
+          if (found && (!found.minOrder || subtotal >= found.minOrder)) {
+            validCoupon = cleanCode;
+            if (found.type === 'percent') {
+              discount = Math.round((subtotal * found.value) / 100);
+            } else if (found.type === 'flat') {
+              discount = Math.min(found.value, subtotal);
+            } else if (found.type === 'shipping') {
+              discount = shippingFee;
+              shippingFee = 0;
+            }
+          }
+        }
+
+        const discountedSubtotal = Math.max(0, subtotal - (validCoupon && AVAILABLE_COUPONS[validCoupon]?.type === 'shipping' ? 0 : discount));
+        const tax = parseFloat((discountedSubtotal * 0.18).toFixed(2));
+        const totalAmount = parseFloat((discountedSubtotal + shippingFee + tax).toFixed(2));
 
         const paymentId = `PAY-${Math.floor(100000 + Math.random() * 900000)}`;
         const gatewayRef = `GW_TXN_${crypto.randomBytes(6).toString('hex').toUpperCase()}`;
@@ -469,6 +497,8 @@ export default async function handler(req, res) {
           customerId: user.id,
           customerName: user.name,
           amount: totalAmount,
+          discount,
+          coupon: validCoupon,
           paymentMethod: `${paymentDetails?.method || 'Credit Card'}${paymentDetails?.cardLast4 ? ` (ending in ${paymentDetails.cardLast4})` : ''}`,
           gatewayRef,
           status: 'success',
@@ -483,6 +513,8 @@ export default async function handler(req, res) {
           customerEmail: user.email,
           items,
           subtotal,
+          coupon: validCoupon,
+          discount,
           shippingFee,
           tax,
           totalAmount,

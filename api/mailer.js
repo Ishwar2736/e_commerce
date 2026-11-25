@@ -160,6 +160,13 @@ export function sendOrderConfirmationEmail(order, baseUrl = '') {
     </tr>
   `).join('');
 
+  const discountRow = order.discount && order.discount > 0 ? `
+    <tr>
+      <td style="padding:6px 0;color:#16a34a;border-bottom:1px solid #f1f5f9;font-weight:600;">Coupon Savings (${order.coupon || 'PROMO'}):</td>
+      <td style="padding:6px 0;color:#16a34a;text-align:right;border-bottom:1px solid #f1f5f9;font-weight:600;">-₹${order.discount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+    </tr>
+  ` : '';
+
   const html = `
     <div style="font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
       <div style="background:linear-gradient(135deg,#1e293b,#0f172a);padding:28px 20px;text-align:center;color:#ffffff;">
@@ -172,8 +179,21 @@ export function sendOrderConfirmationEmail(order, baseUrl = '') {
           <tbody>${itemsHtml}</tbody>
           <tfoot>
             <tr>
-              <td style="padding-top:10px;font-weight:600;">Total Paid:</td>
-              <td style="padding-top:10px;font-weight:700;font-size:15px;text-align:right;">₹${order.totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+              <td style="padding:8px 0 4px;color:#64748b;border-bottom:1px solid #f1f5f9;">Subtotal:</td>
+              <td style="padding:8px 0 4px;text-align:right;border-bottom:1px solid #f1f5f9;">₹${order.subtotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+            </tr>
+            ${discountRow}
+            <tr>
+              <td style="padding:6px 0;color:#64748b;border-bottom:1px solid #f1f5f9;">GST (18%):</td>
+              <td style="padding:6px 0;text-align:right;border-bottom:1px solid #f1f5f9;">₹${order.tax.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+            </tr>
+            <tr>
+              <td style="padding:6px 0;color:#64748b;border-bottom:1px solid #f1f5f9;">Delivery Fee:</td>
+              <td style="padding:6px 0;text-align:right;border-bottom:1px solid #f1f5f9;">${order.shippingFee === 0 ? '<span style="color:#16a34a;font-weight:600;">FREE</span>' : `₹${order.shippingFee.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}</td>
+            </tr>
+            <tr>
+              <td style="padding-top:12px;font-weight:700;font-size:15px;">Total Paid:</td>
+              <td style="padding-top:12px;font-weight:700;font-size:16px;text-align:right;color:#2563eb;">₹${order.totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
             </tr>
           </tfoot>
         </table>

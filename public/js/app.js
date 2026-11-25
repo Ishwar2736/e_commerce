@@ -9,6 +9,7 @@
     user: null,
     token: localStorage.getItem('omnistore_token') || null,
     cart: JSON.parse(localStorage.getItem('omnistore_cart') || '[]'),
+    appliedCoupon: null,
     products: [],
     categories: [],
     activeCategory: 'all',
@@ -47,6 +48,99 @@
     return '₹' + Number(val || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
   window.formatINR = formatINR;
+
+  // Available Promotional Coupons
+  const AVAILABLE_COUPONS = {
+    'WELCOME10': { type: 'percent', value: 10, minOrder: 0, desc: '10% off entire order' },
+    'FESTIVE20': { type: 'percent', value: 20, minOrder: 0, desc: '20% festive special discount' },
+    'FLAT500': { type: 'flat', value: 500, minOrder: 1500, desc: 'Flat ₹500 off on orders ₹1,500+' },
+    'FREESHIP': { type: 'shipping', value: 99, minOrder: 0, desc: 'Free express shipping (saves ₹99)' },
+    'MEGA50': { type: 'percent', value: 50, minOrder: 0, desc: '50% mega savings discount' }
+  };
+
+  function calculateTotals(subtotal, coupon) {
+    let discount = 0;
+    let shipping = subtotal >= 999 || subtotal === 0 ? 0 : 99;
+
+    if (coupon) {
+      if (coupon.type === 'percent') {
+        discount = Math.round((subtotal * coupon.value) / 100);
+      } else if (coupon.type === 'flat') {
+        discount = Math.min(coupon.value, subtotal);
+      } else if (coupon.type === 'shipping') {
+        discount = shipping;
+        shipping = 0;
+      }
+    }
+
+    const discountedSubtotal = Math.max(0, subtotal - (coupon?.type === 'shipping' ? 0 : discount));
+    const tax = parseFloat((discountedSubtotal * 0.18).toFixed(2));
+    const total = parseFloat((discountedSubtotal + shipping + tax).toFixed(2));
+
+    return {
+      subtotal,
+      discount,
+      shipping,
+      tax,
+      total
+    };
+  }
+
+  // Password Visibility Toggle Helper
+  window.togglePasswordVisibility = function (inputId, btnId) {
+    const input = document.getElementById(inputId);
+    const btn = document.getElementById(btnId);
+    if (!input) return;
+    const isPassword = input.type === 'password';
+    input.type = isPassword ? 'text' : 'password';
+    if (btn) {
+      btn.title = isPassword ? 'Hide password' : 'Show password';
+      btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+      btn.innerHTML = isPassword
+        ? `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+          </svg>`
+        : `<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400 hover:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>`;
+    }
+  };
+
+  // Coupon Action Handlers
+  window.applyCoupon = function (code) {
+    const key = (code || '').trim().toUpperCase();
+    const couponInfo = AVAILABLE_COUPONS[key];
+    if (!couponInfo) {
+      showToast(`Invalid coupon code "${code}". Try WELCOME10, FESTIVE20 or FLAT500.`, 'error');
+      return;
+    }
+
+    const subtotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    if (couponInfo.minOrder && subtotal < couponInfo.minOrder) {
+      showToast(`Coupon ${key} requires a minimum order of ${formatINR(couponInfo.minOrder)}`, 'warning');
+      return;
+    }
+
+    state.appliedCoupon = { code: key, ...couponInfo };
+    showToast(`Coupon "${key}" applied! You save money on this order.`, 'success');
+    renderCheckoutModal();
+  };
+
+  window.applyCouponFromInput = function () {
+    const input = document.getElementById('coupon-input');
+    if (!input || !input.value.trim()) {
+      showToast('Please enter a coupon code first.', 'warning');
+      return;
+    }
+    window.applyCoupon(input.value.trim());
+  };
+
+  window.removeCoupon = function () {
+    state.appliedCoupon = null;
+    showToast('Coupon removed.', 'info');
+    renderCheckoutModal();
+  };
 
   // Toast Notification
   function showToast(message, type = 'info') {
@@ -641,25 +735,23 @@
     const content = document.getElementById('checkout-modal-content');
 
     const subtotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const shipping = subtotal >= 999 || subtotal === 0 ? 0 : 99;
-    const tax = subtotal * 0.18;
-    const total = subtotal + shipping + tax;
+    const totals = calculateTotals(subtotal, state.appliedCoupon);
 
     content.innerHTML = `
       <div class="relative">
-        <button onclick="window.closeModals()" class="absolute top-0 right-0 text-slate-400 hover:text-slate-600">✕</button>
+        <button onclick="window.closeModals()" class="absolute top-0 right-0 text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
         
         <div class="flex items-center gap-2 mb-4">
           <div class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs">✓</div>
           <div>
             <h3 class="font-bold text-slate-900 text-lg">Secure Multi-Step Checkout</h3>
-            <p class="text-xs text-slate-500">Includes Payment Gateway processing & inventory reservation</p>
+            <p class="text-xs text-slate-500">Apply coupons & select payment gateway</p>
           </div>
         </div>
 
         <form id="checkout-form" onsubmit="window.processOrderCheckout(event)" class="space-y-4">
           
-          <!-- Shipping Address -->
+          <!-- 1. Shipping Address -->
           <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
             <h4 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-1.5">
               <span>1. Shipping Details</span>
@@ -673,10 +765,80 @@
             </div>
           </div>
 
-          <!-- Payment Gateway Selection -->
+          <!-- 2. Apply Coupon / Promo Code (Before Payment) -->
+          <div class="bg-gradient-to-br from-emerald-50 to-teal-50 p-4 rounded-xl border border-emerald-200 space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-bold text-emerald-900 uppercase flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                </svg>
+                <span>2. Apply Coupon / Discount Code</span>
+              </h4>
+              ${state.appliedCoupon ? `
+                <button type="button" onclick="window.removeCoupon()" class="text-[11px] text-red-600 hover:text-red-700 font-bold flex items-center gap-1 hover:underline">
+                  ✕ Remove
+                </button>
+              ` : ''}
+            </div>
+
+            <!-- Coupon Input & Apply Button -->
+            <div class="flex gap-2">
+              <input type="text" id="coupon-input" placeholder="Enter coupon code (e.g. WELCOME10)" value="${state.appliedCoupon ? state.appliedCoupon.code : ''}" ${state.appliedCoupon ? 'disabled' : ''} class="flex-1 uppercase font-mono font-bold text-xs p-2 bg-white border border-emerald-200 rounded-lg placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+              ${state.appliedCoupon ? `
+                <div class="px-3 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold flex items-center gap-1">
+                  ✓ Applied
+                </div>
+              ` : `
+                <button type="button" onclick="window.applyCouponFromInput()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition shadow-sm">
+                  Apply
+                </button>
+              `}
+            </div>
+
+            ${state.appliedCoupon ? `
+              <div class="p-2.5 bg-white border border-emerald-300 rounded-lg text-xs text-emerald-800 flex items-center justify-between shadow-xs">
+                <div class="flex items-center gap-2">
+                  <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[11px]">✓</span>
+                  <div>
+                    <span class="font-bold text-slate-800 font-mono">${state.appliedCoupon.code}</span>: ${state.appliedCoupon.desc}
+                  </div>
+                </div>
+                <span class="font-bold text-emerald-700 font-mono text-xs">-${formatINR(totals.discount)}</span>
+              </div>
+            ` : `
+              <!-- Quick Coupon Selection Pills -->
+              <div class="space-y-1.5 pt-1">
+                <p class="text-[11px] font-semibold text-emerald-800">Available Coupons (Click to apply):</p>
+                <div class="flex flex-wrap gap-1.5">
+                  <button type="button" onclick="window.applyCoupon('WELCOME10')" class="px-2 py-1 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-bold text-emerald-800 flex items-center gap-1 transition shadow-xs" title="10% off entire order">
+                    <span class="font-mono text-emerald-700">WELCOME10</span>
+                    <span class="text-[10px] text-slate-500 font-normal">10% OFF</span>
+                  </button>
+                  <button type="button" onclick="window.applyCoupon('FESTIVE20')" class="px-2 py-1 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-bold text-emerald-800 flex items-center gap-1 transition shadow-xs" title="20% mega festive discount">
+                    <span class="font-mono text-emerald-700">FESTIVE20</span>
+                    <span class="text-[10px] text-slate-500 font-normal">20% OFF</span>
+                  </button>
+                  <button type="button" onclick="window.applyCoupon('FLAT500')" class="px-2 py-1 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-bold text-emerald-800 flex items-center gap-1 transition shadow-xs" title="Flat ₹500 off on ₹1500+">
+                    <span class="font-mono text-emerald-700">FLAT500</span>
+                    <span class="text-[10px] text-slate-500 font-normal">₹500 OFF</span>
+                  </button>
+                  <button type="button" onclick="window.applyCoupon('FREESHIP')" class="px-2 py-1 bg-white hover:bg-emerald-100 border border-emerald-300 rounded text-[11px] font-bold text-emerald-800 flex items-center gap-1 transition shadow-xs" title="Free Delivery">
+                    <span class="font-mono text-emerald-700">FREESHIP</span>
+                    <span class="text-[10px] text-slate-500 font-normal">Free Ship</span>
+                  </button>
+                  <button type="button" onclick="window.applyCoupon('MEGA50')" class="px-2 py-1 bg-white hover:bg-purple-100 border border-purple-300 rounded text-[11px] font-bold text-purple-800 flex items-center gap-1 transition shadow-xs" title="50% mega discount">
+                    <span class="font-mono text-purple-700">MEGA50</span>
+                    <span class="text-[10px] text-purple-500 font-normal">50% OFF</span>
+                  </button>
+                </div>
+              </div>
+            `}
+          </div>
+
+          <!-- 3. Payment Gateway Selection -->
           <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
             <div class="flex items-center justify-between">
-              <h4 class="text-xs font-bold text-slate-800 uppercase">2. Payment Gateway</h4>
+              <h4 class="text-xs font-bold text-slate-800 uppercase">3. Payment Gateway</h4>
               <button type="button" onclick="window.fillDemoCard()" class="text-[11px] text-blue-600 hover:underline font-semibold">Autofill Demo Card</button>
             </div>
 
@@ -708,15 +870,35 @@
             </div>
           </div>
 
-          <!-- Total Calculation -->
-          <div class="bg-blue-50 p-3 rounded-xl border border-blue-100 flex items-center justify-between text-xs">
-            <span class="font-bold text-blue-900">Total Amount to Pay:</span>
-            <span class="text-base font-black text-blue-700">${formatINR(total)}</span>
+          <!-- 4. Total Calculation Breakdown -->
+          <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs space-y-2">
+            <div class="flex justify-between text-slate-600">
+              <span>Items Subtotal:</span>
+              <span class="font-medium text-slate-800">${formatINR(totals.subtotal)}</span>
+            </div>
+            ${totals.discount > 0 ? `
+              <div class="flex justify-between text-emerald-600 font-bold">
+                <span>Coupon Discount (${state.appliedCoupon.code}):</span>
+                <span>-${formatINR(totals.discount)}</span>
+              </div>
+            ` : ''}
+            <div class="flex justify-between text-slate-600">
+              <span>GST (18%):</span>
+              <span class="font-medium text-slate-800">${formatINR(totals.tax)}</span>
+            </div>
+            <div class="flex justify-between text-slate-600">
+              <span>Delivery Fee:</span>
+              <span class="font-medium text-slate-800">${totals.shipping === 0 ? '<span class="text-emerald-600 font-bold">FREE</span>' : formatINR(totals.shipping)}</span>
+            </div>
+            <div class="pt-2 border-t border-slate-200 flex justify-between items-center text-sm font-black text-slate-900">
+              <span>Total Amount to Pay:</span>
+              <span class="text-base text-blue-700">${formatINR(totals.total)}</span>
+            </div>
           </div>
 
           <!-- Gateway Spinner and Submit -->
           <button type="submit" id="pay-submit-btn" class="w-full btn-primary text-sm py-3 font-bold shadow-md">
-            Authorize & Pay ${formatINR(total)} &rarr;
+            Authorize & Pay ${formatINR(totals.total)} &rarr;
           </button>
         </form>
       </div>
@@ -767,7 +949,8 @@
         paymentDetails: {
           method: paymentMethod,
           cardLast4: cardLast4
-        }
+        },
+        couponCode: state.appliedCoupon ? state.appliedCoupon.code : null
       };
 
       const res = await api('/api/orders/place', {
@@ -775,8 +958,9 @@
         body: JSON.stringify(payload)
       });
 
-      // Clear cart
+      // Clear cart and applied coupon
       state.cart = [];
+      state.appliedCoupon = null;
       saveCart();
       renderCart();
 
@@ -814,6 +998,12 @@
             <span class="text-slate-500">Tracking Number:</span>
             <span class="font-mono font-bold text-blue-600">${order.trackingNumber}</span>
           </div>
+          ${order.discount > 0 ? `
+            <div class="flex justify-between text-emerald-600 font-bold">
+              <span>Coupon Discount (${escapeHtml(order.coupon || 'PROMO')}):</span>
+              <span>-${formatINR(order.discount)}</span>
+            </div>
+          ` : ''}
           <div class="flex justify-between">
             <span class="text-slate-500">Total Paid:</span>
             <span class="font-bold text-slate-900">${formatINR(order.totalAmount)} (${order.paymentMethod})</span>
@@ -930,6 +1120,12 @@
               <span class="font-semibold text-slate-900">${formatINR(i.price * i.quantity)}</span>
             </div>
           `).join('')}
+          ${order.discount > 0 ? `
+            <div class="flex justify-between items-center text-emerald-600 font-semibold">
+              <span>Coupon Discount (${escapeHtml(order.coupon || 'PROMO')}):</span>
+              <span>-${formatINR(order.discount)}</span>
+            </div>
+          ` : ''}
           <div class="flex justify-between text-sm font-bold text-slate-900 pt-2 border-t border-slate-100">
             <span>Total:</span>
             <span>${formatINR(order.totalAmount)}</span>
@@ -1192,7 +1388,8 @@
           ${o.items.map(i => `${escapeHtml(i.name)} (${i.quantity})`).join(', ')}
         </td>
         <td class="px-6 py-4 font-bold text-xs text-slate-900">
-          ${formatINR(o.totalAmount)}
+          <div>${formatINR(o.totalAmount)}</div>
+          ${o.discount > 0 ? `<div class="text-[10px] text-emerald-600 font-semibold">-${formatINR(o.discount)} (${escapeHtml(o.coupon || 'PROMO')})</div>` : ''}
         </td>
         <td class="px-6 py-4">
           <span class="badge ${o.orderStatus === 'delivered' ? 'badge-approved' : (o.orderStatus === 'cancelled' ? 'badge-rejected' : 'badge-info')}">
@@ -1624,7 +1821,15 @@
             </div>
             <div>
               <label class="font-semibold text-slate-700">Password</label>
-              <input type="password" id="login-password" required value="${escapeHtml(initialPassword)}" placeholder="Password" class="w-full mt-1 p-2.5 bg-slate-50 border border-slate-200 rounded-lg">
+              <div class="relative mt-1">
+                <input type="password" id="login-password" required value="${escapeHtml(initialPassword)}" placeholder="Password" class="w-full p-2.5 pr-10 bg-slate-50 border border-slate-200 rounded-lg">
+                <button type="button" id="login-password-toggle" onclick="window.togglePasswordVisibility('login-password', 'login-password-toggle')" class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer text-slate-400 hover:text-slate-600 focus:outline-none" title="Show / Hide Password" aria-label="Show password">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400 hover:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+              </div>
             </div>
             <button type="submit" class="w-full btn-primary text-xs py-2.5 font-bold shadow-md">Sign In &rarr;</button>
           </form>
@@ -1654,7 +1859,15 @@
             </div>
             <div>
               <label class="font-semibold text-slate-700">Password</label>
-              <input type="password" id="reg-password" required placeholder="••••••••" class="w-full mt-1 p-2 bg-slate-50 border border-slate-200 rounded-lg">
+              <div class="relative mt-1">
+                <input type="password" id="reg-password" required placeholder="••••••••" class="w-full p-2 pr-10 bg-slate-50 border border-slate-200 rounded-lg">
+                <button type="button" id="reg-password-toggle" onclick="window.togglePasswordVisibility('reg-password', 'reg-password-toggle')" class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer text-slate-400 hover:text-slate-600 focus:outline-none" title="Show / Hide Password" aria-label="Show password">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-slate-400 hover:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                </button>
+              </div>
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
