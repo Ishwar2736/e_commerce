@@ -187,7 +187,9 @@
     await checkAuth();
     await loadCategories();
     await loadProducts();
-    await loadEmails();
+    if (state.user && state.user.role === 'admin') {
+      await loadEmails();
+    }
 
     // Check URL parameters for verification tokens or direct order tracking
     const params = new URLSearchParams(window.location.search);
@@ -252,9 +254,11 @@
     const container = document.getElementById('auth-actions');
     const adminNavBtn = document.getElementById('nav-admin-btn');
     const storeNavBtn = document.getElementById('nav-store-btn');
+    const adminMailboxBtn = document.getElementById('admin-mailbox-btn');
+    const footerMailboxLink = document.getElementById('footer-admin-mailbox');
     const isAdmin = Boolean(state.user && state.user.role === 'admin');
 
-    // Only display Admin Panel and Storefront switcher buttons when logged in as admin
+    // Only display Admin Panel, Storefront switcher, and Transaction Mailbox when logged in as admin
     if (adminNavBtn) {
       if (isAdmin) {
         adminNavBtn.classList.remove('hidden');
@@ -267,6 +271,21 @@
         storeNavBtn.classList.remove('hidden');
       } else {
         storeNavBtn.classList.add('hidden');
+      }
+    }
+    if (adminMailboxBtn) {
+      if (isAdmin) {
+        adminMailboxBtn.classList.remove('hidden');
+        loadEmails();
+      } else {
+        adminMailboxBtn.classList.add('hidden');
+      }
+    }
+    if (footerMailboxLink) {
+      if (isAdmin) {
+        footerMailboxLink.classList.remove('hidden');
+      } else {
+        footerMailboxLink.classList.add('hidden');
       }
     }
 
@@ -2369,6 +2388,7 @@
   // ==========================================
 
   async function loadEmails() {
+    if (!state.user || state.user.role !== 'admin') return;
     try {
       const data = await api('/api/emails');
       state.emails = data.emails || [];
@@ -2380,6 +2400,10 @@
   }
 
   window.openMailbox = async function () {
+    if (!state.user || state.user.role !== 'admin') {
+      showToast('Admin login required to view transaction mailbox logs.', 'warning');
+      return;
+    }
     await loadEmails();
     const modal = document.getElementById('mailbox-modal');
     const content = document.getElementById('mailbox-modal-content');
@@ -2709,6 +2733,8 @@
     state.searchQuery = '';
     const searchInput = document.getElementById('global-search');
     if (searchInput) searchInput.value = '';
+    const mobileInput = document.getElementById('mobile-search');
+    if (mobileInput) mobileInput.value = '';
     renderCategoryPills();
     loadProducts();
     const catalogElem = document.getElementById('category-pills');
@@ -2719,6 +2745,10 @@
 
   window.handleSearch = function (query) {
     state.searchQuery = query;
+    const globalInput = document.getElementById('global-search');
+    const mobileInput = document.getElementById('mobile-search');
+    if (globalInput && globalInput.value !== query) globalInput.value = query;
+    if (mobileInput && mobileInput.value !== query) mobileInput.value = query;
     loadProducts();
   };
 
