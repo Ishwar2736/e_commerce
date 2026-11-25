@@ -84,10 +84,12 @@
           <select id="search-category-filter" onchange="window.filterCategory(this.value)" class="bg-slate-100 text-xs px-3 py-2.5 text-slate-700 font-semibold border-r border-slate-300 focus:outline-none cursor-pointer hover:bg-slate-200">
             <option value="all">All</option>
             <option value="electronics">Electronics</option>
-            <option value="audio">Audio</option>
             <option value="wearables">Wearables</option>
+            <option value="audio">Audio & Sound</option>
+            <option value="fashion">Fashion</option>
             <option value="home">Home & Kitchen</option>
-            <option value="accessories">Accessories</option>
+            <option value="beauty">Beauty & Wellness</option>
+            <option value="sports">Sports & Fitness</option>
           </select>
           <input 
             type="text" 
@@ -165,17 +167,17 @@
       <button onclick="window.filterCategory('all')" class="font-bold flex items-center gap-1 text-white hover:border-white px-1 py-0.5 rounded">
         <span>☰ All</span>
       </button>
-      <button onclick="window.startCheckout()" class="text-white hover:text-[#febd69] font-medium px-1">Amazon Pay</button>
       <button onclick="window.filterCategory('electronics')" class="text-white hover:text-[#febd69] font-medium px-1">Mobiles & Gadgets</button>
-      <button onclick="window.filterCategory('all')" class="text-white hover:text-[#febd69] font-medium px-1">Today's Deals</button>
+      <button onclick="window.filterCategory('wearables')" class="text-white hover:text-[#febd69] font-medium px-1">Wearables</button>
+      <button onclick="window.filterCategory('audio')" class="text-white hover:text-[#febd69] font-medium px-1">Audio & Sound</button>
+      <button onclick="window.filterCategory('fashion')" class="text-white hover:text-[#febd69] font-medium px-1">Fashion & Apparel</button>
+      <button onclick="window.filterCategory('home')" class="text-white hover:text-[#febd69] font-medium px-1">Home & Kitchen</button>
+      <button onclick="window.filterCategory('sports')" class="text-white hover:text-[#febd69] font-medium px-1">Sports & Fitness</button>
+      <button onclick="window.filterCategory('beauty')" class="text-white hover:text-[#febd69] font-medium px-1">Beauty & Wellness</button>
+      <button onclick="window.filterCategory('all'); window.handleSort('rating');" class="text-white hover:text-[#febd69] font-medium px-1">Today's Deals</button>
       <button onclick="window.startCheckout()" class="text-emerald-400 font-bold flex items-center gap-1 px-1">
         <span>🎟️ Coupons</span>
       </button>
-      <button onclick="window.handleSort('rating')" class="text-white hover:text-[#febd69] font-medium px-1">Bestsellers</button>
-      <button onclick="window.filterCategory('electronics')" class="text-white hover:text-[#febd69] font-medium px-1">Electronics</button>
-      <button onclick="window.filterCategory('audio')" class="text-white hover:text-[#febd69] font-medium px-1">Audio & Sound</button>
-      <button onclick="window.filterCategory('wearables')" class="text-white hover:text-[#febd69] font-medium px-1">Wearables</button>
-      <button onclick="window.filterCategory('home')" class="text-white hover:text-[#febd69] font-medium px-1">Home & Kitchen</button>
       <button onclick="window.openTrackOrderModal()" class="text-sky-300 font-semibold flex items-center gap-1 px-1">
         <span>📦 Track Order</span>
       </button>

@@ -101,8 +101,22 @@ function getInitialData() {
         id: 'cat_electronics',
         name: 'Electronics & Gadgets',
         slug: 'electronics',
-        description: 'Next-gen devices, smart wearables, audio, and premium computing gear.',
+        description: 'Keyboards, gaming mice, fast chargers, and computing accessories.',
         icon: 'Cpu'
+      },
+      {
+        id: 'cat_wearables',
+        name: 'Wearables & Watches',
+        slug: 'wearables',
+        description: 'Smartwatches, fitness bands, smart health rings, and connected devices.',
+        icon: 'Watch'
+      },
+      {
+        id: 'cat_audio',
+        name: 'Audio & Sound',
+        slug: 'audio',
+        description: 'ANC headphones, true wireless earbuds, portable speakers, and soundbars.',
+        icon: 'Headphones'
       },
       {
         id: 'cat_fashion',
@@ -113,7 +127,7 @@ function getInitialData() {
       },
       {
         id: 'cat_home',
-        name: 'Home & Living',
+        name: 'Home & Kitchen',
         slug: 'home-living',
         description: 'Minimalist furniture, smart home decor, and ambient lighting.',
         icon: 'Home'

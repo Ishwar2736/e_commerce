@@ -307,10 +307,20 @@
 
   const CATEGORY_ICONS = {
     'all': '🛍️',
-    'electronics': '💻',
-    'audio': '🎧',
+    'cat_wearables': '⌚',
+    'cat_audio': '🎧',
+    'cat_electronics': '💻',
+    'cat_fashion': '👕',
+    'cat_home': '🏠',
+    'cat_beauty': '✨',
+    'cat_sports': '🏃',
     'wearables': '⌚',
+    'audio': '🎧',
+    'electronics': '💻',
+    'fashion': '👕',
     'home': '🏠',
+    'beauty': '✨',
+    'sports': '🏃',
     'accessories': '🎒'
   };
 

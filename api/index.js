@@ -357,7 +357,45 @@ export default async function handler(req, res) {
         const sortBy = reqUrl.searchParams.get('sortBy');
 
         if (category && category !== 'all') {
-          prods = prods.filter(p => p.categoryId === category || p.categoryName.toLowerCase().includes(category.toLowerCase()));
+          const catLower = category.toLowerCase().trim();
+          prods = prods.filter(p => {
+            const pCatId = (p.categoryId || '').toLowerCase();
+            const pCatName = (p.categoryName || '').toLowerCase();
+            const pName = (p.name || '').toLowerCase();
+
+            // Direct ID or name match
+            if (pCatId === catLower || pCatId === `cat_${catLower}` || pCatName.includes(catLower)) {
+              return true;
+            }
+
+            // Keyword aliases
+            if (catLower === 'wearables' || catLower === 'cat_wearables') {
+              return pCatId === 'cat_wearables' || pCatName.includes('wearable') || pCatName.includes('watch') || pName.includes('watch') || pName.includes('tracker') || pName.includes('fitness band') || pName.includes('smart ring');
+            }
+            if (catLower === 'audio' || catLower === 'cat_audio') {
+              return pCatId === 'cat_audio' || pCatName.includes('audio') || pCatName.includes('sound') || pName.includes('headphone') || pName.includes('earbud') || pName.includes('speaker') || pName.includes('soundbar');
+            }
+            if (catLower === 'electronics' || catLower === 'cat_electronics') {
+              return pCatId === 'cat_electronics' || pCatName.includes('electronic') || pCatName.includes('gadget');
+            }
+            if (catLower === 'fashion' || catLower === 'cat_fashion' || catLower === 'apparel') {
+              return pCatId === 'cat_fashion' || pCatName.includes('fashion') || pCatName.includes('apparel');
+            }
+            if (catLower === 'home' || catLower === 'cat_home' || catLower === 'home-living') {
+              return pCatId === 'cat_home' || pCatName.includes('home') || pCatName.includes('living') || pCatName.includes('kitchen');
+            }
+            if (catLower === 'beauty' || catLower === 'cat_beauty') {
+              return pCatId === 'cat_beauty' || pCatName.includes('beauty') || pCatName.includes('wellness');
+            }
+            if (catLower === 'sports' || catLower === 'cat_sports') {
+              return pCatId === 'cat_sports' || pCatName.includes('sports') || pCatName.includes('outdoors') || pCatName.includes('fitness');
+            }
+            if (catLower === 'accessories') {
+              return pCatId === 'cat_fashion' || pName.includes('sunglasses') || pName.includes('bag') || pName.includes('duffel') || pName.includes('power bank');
+            }
+
+            return false;
+          });
         }
         if (search) {
           const q = search.toLowerCase();
