@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniStore - Full-Stack E-Commerce Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/style.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+
+  <!-- Top Global Bar -->
+  <div class="bg-slate-900 text-slate-300 text-xs py-2 px-4 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center px-2 py-0.5 rounded bg-blue-900/60 text-blue-300 border border-blue-700/50 font-medium">UML Architecture Demo</span>
+        <span>Customer Storefront &bull; Admin Verification Portal &bull; Payment Gateway &bull; Delivery Service</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <!-- Quick Sign In Links -->
+        <span class="text-slate-400">Sign In:</span>
+        <button onclick="window.openAuthModal('login', 'admin@store.com')" class="hover:text-purple-300 text-purple-400 underline font-semibold">Admin Login</button>
+        <span class="text-slate-600">|</span>
+        <button onclick="window.openAuthModal('login', 'john@example.com')" class="hover:text-white underline">Customer Login</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header Navigation -->
+  <header class="header-nav">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo -->
+      <a href="#" onclick="window.switchTab('store'); return false;" class="flex items-center gap-2 text-xl font-bold text-slate-900 tracking-tight">
+        <div class="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-md font-black">
+          OS
+        </div>
+        <span>Omni<span class="text-blue-600">Store</span></span>
+      </a>
+
+      <!-- Search Input (Search Products Use Case) -->
+      <div class="flex-1 max-w-lg hidden md:block">
+        <div class="relative">
+          <input 
+            type="text" 
+            id="global-search" 
+            placeholder="Search products by title, category, or specifications..." 
+            class="w-full pl-10 pr-4 py-2 text-sm bg-slate-100 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+            oninput="window.handleSearch(this.value)"
+          >
+          <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Action Items & Role Toggle -->
+      <div class="flex items-center gap-3">
+        <!-- View Toggle (Store vs Admin) -->
+        <button id="nav-store-btn" onclick="window.switchTab('store')" class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-blue-50 text-blue-600 border border-blue-200">
+          Storefront
+        </button>
+        <button id="nav-admin-btn" onclick="window.switchTab('admin')" class="hidden px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 relative">
+          Admin Panel
+          <span id="pending-badge" class="hidden ml-1 px-1.5 py-0.2 rounded-full text-xs bg-amber-500 text-white font-bold">0</span>
+        </button>
+
+        <!-- Simulated Mailbox (Inspect sent emails) -->
+        <button onclick="window.openMailbox()" class="p-2 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-blue-50 relative border border-slate-200" title="Inspect Dispatched Emails">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+          </svg>
+          <span id="mail-count-badge" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold">0</span>
+        </button>
+
+        <!-- Cart Trigger (Add to Cart / Place Order Use Cases) -->
+        <button onclick="window.toggleCart()" class="p-2 rounded-lg text-slate-700 hover:text-blue-600 hover:bg-blue-50 relative border border-slate-200" title="View Shopping Cart">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+          </svg>
+          <span id="cart-count-badge" class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center font-bold">0</span>
+        </button>
+
+        <!-- User Authentication & Account Profile -->
+        <div id="auth-actions" class="flex items-center gap-2">
+          <!-- Injected via JavaScript -->
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mobile Search -->
+    <div class="px-4 pb-3 md:hidden">
+      <input 
+        type="text" 
+        placeholder="Search products..." 
+        class="w-full px-4 py-2 text-sm bg-slate-100 border border-slate-200 rounded-lg focus:outline-none focus:bg-white"
+        oninput="window.handleSearch(this.value)"
+      >
+    </div>
+  </header>
+
+  <!-- Notification Banner (For verification status alerts) -->
+  <div id="account-alert-banner" class="hidden bg-amber-500 text-slate-900 px-4 py-2.5 text-sm font-medium shadow-sm">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+        <span id="account-alert-text">Your account is awaiting manual administrator verification. An administrator will review your account soon.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
+
+    <!-- ========================================== -->
+    <!-- 1. CUSTOMER STOREFRONT VIEW               -->
+    <!-- ========================================== -->
+    <section id="view-store" class="space-y-8">
+      
+      <!-- Hero Promotional Banner -->
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 text-white p-8 md:p-12 shadow-lg">
+        <div class="relative z-10 max-w-2xl space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-400/30">
+            <span>Verified Marketplace Standard</span>
+          </div>
+          <h1 class="text-3xl md:text-5xl font-black tracking-tight leading-tight">
+            Premium Hardware, Gear & Essentials.
+          </h1>
+          <p class="text-slate-300 text-sm md:text-base leading-relaxed">
+            Every product is handpicked, every seller and customer account is manually verified for high trust. Track orders in real-time from placement to doorstep.
+          </p>
+          <div class="flex flex-wrap gap-3 pt-2">
+            <button onclick="window.filterCategory('all')" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-xl font-semibold text-sm shadow transition">
+              Explore Catalog
+            </button>
+            <button onclick="window.openTrackOrderModal()" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-5 py-2.5 rounded-xl font-semibold text-sm transition">
+              Track an Order &rarr;
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categories & Filter Toolbar (Browse Products Use Case) -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200">
+        <!-- Category Pills -->
+        <div id="category-pills" class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+          <!-- Injected via JavaScript -->
+        </div>
+
+        <!-- Sort Control -->
+        <div class="flex items-center gap-2 self-end md:self-auto">
+          <span class="text-xs text-slate-500 font-medium">Sort by:</span>
+          <select id="sort-select" onchange="window.handleSort(this.value)" class="text-xs bg-white border border-slate-200 rounded-lg px-3 py-2 font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500">
+            <option value="featured">Featured First</option>
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+            <option value="rating">Highest Customer Rating</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Product Catalog Grid -->
+      <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Injected via JavaScript -->
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- 2. ADMIN PORTAL VIEW                       -->
+    <!-- ========================================== -->
+    <section id="view-admin" class="hidden space-y-6">
+      
+      <!-- Admin Header -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-2xl font-bold text-slate-900">Administrator Command Center</h2>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-100 text-purple-700 border border-purple-200">Admin Role</span>
+          </div>
+          <p class="text-sm text-slate-500 mt-1">Manage manual customer email approvals, products catalog, categories, incoming orders, payments, and generated reports.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="window.openAddProductModal()" class="btn-primary text-xs">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Add New Product
+          </button>
+        </div>
+      </div>
+
+      <!-- Admin Tab Navigation (Direct UML Actor Functions) -->
+      <div class="flex border-b border-slate-200 overflow-x-auto gap-2">
+        <button id="tab-btn-customers" onclick="window.setAdminTab('customers')" class="px-4 py-3 text-sm font-semibold border-b-2 border-blue-600 text-blue-600 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+          Manage Customers & Email Approvals
+          <span id="admin-pending-count" class="px-2 py-0.5 text-xs rounded-full bg-amber-500 text-white font-bold">0</span>
+        </button>
+        <button id="tab-btn-orders" onclick="window.setAdminTab('orders')" class="px-4 py-3 text-sm font-semibold text-slate-600 hover:text-slate-900 border-b-2 border-transparent flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+          Manage Orders
+        </button>
+        <button id="tab-btn-products" onclick="window.setAdminTab('products')" class="px-4 py-3 text-sm font-semibold text-slate-600 hover:text-slate-900 border-b-2 border-transparent flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+          Manage Products
+        </button>
+        <button id="tab-btn-categories" onclick="window.setAdminTab('categories')" class="px-4 py-3 text-sm font-semibold text-slate-600 hover:text-slate-900 border-b-2 border-transparent flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+          Manage Categories
+        </button>
+        <button id="tab-btn-payments" onclick="window.setAdminTab('payments')" class="px-4 py-3 text-sm font-semibold text-slate-600 hover:text-slate-900 border-b-2 border-transparent flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+          Manage Payments
+        </button>
+        <button id="tab-btn-reports" onclick="window.setAdminTab('reports')" class="px-4 py-3 text-sm font-semibold text-slate-600 hover:text-slate-900 border-b-2 border-transparent flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+          Generate Reports
+        </button>
+      </div>
+
+      <!-- Admin Sub-View: Manage Customers & Email Approvals (User's special requirement!) -->
+      <div id="admin-subview-customers" class="space-y-4">
+        <!-- Explanatory Banner -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
+          <div class="p-2 bg-blue-100 rounded-lg text-blue-700">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-blue-900">Manual User Verification & Email Approval Workflow</h4>
+            <p class="text-xs text-blue-700 mt-0.5">
+              Customers registering on the platform start in <strong>Pending Approval</strong> status. As Administrator, you can manually verify and approve them (which automatically sends an activation email) or dispatch an email verification token link.
+            </p>
+          </div>
+        </div>
+
+        <!-- Filter tabs for customers -->
+        <div class="flex items-center gap-2">
+          <button onclick="window.filterCustomers('all')" id="btn-cust-all" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white">All Customers</button>
+          <button onclick="window.filterCustomers('pending_approval')" id="btn-cust-pending" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5">
+            Pending Approval
+            <span id="cust-pending-chip" class="px-1.5 py-0.2 rounded-full bg-amber-500 text-white text-[10px]">0</span>
+          </button>
+          <button onclick="window.filterCustomers('approved')" id="btn-cust-approved" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200">Approved</button>
+          <button onclick="window.filterCustomers('rejected')" id="btn-cust-rejected" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200">Rejected</button>
+        </div>
+
+        <!-- Customers Table -->
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-600">
+              <thead class="bg-slate-50 text-xs font-bold text-slate-500 uppercase border-b border-slate-200">
+                <tr>
+                  <th class="px-6 py-3.5">Customer Name & Email</th>
+                  <th class="px-6 py-3.5">Registration Date</th>
+                  <th class="px-6 py-3.5">Verification Status</th>
+                  <th class="px-6 py-3.5">Orders / Spent</th>
+                  <th class="px-6 py-3.5 text-right">Admin Actions</th>
+                </tr>
+              </thead>
+              <tbody id="customers-table-body" class="divide-y divide-slate-200">
+                <!-- Injected via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Sub-View: Manage Orders -->
+      <div id="admin-subview-orders" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+          <div class="p-4 border-b border-slate-200 flex items-center justify-between">
+            <h3 class="font-bold text-slate-900">Customer Orders & Shipment Tracking</h3>
+            <span class="text-xs text-slate-500">Live order status updates trigger customer notification emails</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-600">
+              <thead class="bg-slate-50 text-xs font-bold text-slate-500 uppercase border-b border-slate-200">
+                <tr>
+                  <th class="px-6 py-3.5">Order ID</th>
+                  <th class="px-6 py-3.5">Customer</th>
+                  <th class="px-6 py-3.5">Items</th>
+                  <th class="px-6 py-3.5">Total Amount</th>
+                  <th class="px-6 py-3.5">Status</th>
+                  <th class="px-6 py-3.5 text-right">Update Delivery</th>
+                </tr>
+              </thead>
+              <tbody id="admin-orders-table-body" class="divide-y divide-slate-200">
+                <!-- Injected via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Sub-View: Manage Products -->
+      <div id="admin-subview-products" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+          <div class="p-4 border-b border-slate-200 flex items-center justify-between">
+            <h3 class="font-bold text-slate-900">Inventory & Catalog Management</h3>
+            <button onclick="window.openAddProductModal()" class="btn-primary text-xs">Add Product</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-600">
+              <thead class="bg-slate-50 text-xs font-bold text-slate-500 uppercase border-b border-slate-200">
+                <tr>
+                  <th class="px-6 py-3.5">Product</th>
+                  <th class="px-6 py-3.5">Category</th>
+                  <th class="px-6 py-3.5">Price</th>
+                  <th class="px-6 py-3.5">Stock</th>
+                  <th class="px-6 py-3.5">Rating</th>
+                  <th class="px-6 py-3.5 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-products-table-body" class="divide-y divide-slate-200">
+                <!-- Injected via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Sub-View: Manage Categories -->
+      <div id="admin-subview-categories" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-slate-900">Product Categories</h3>
+            <button onclick="window.openAddCategoryModal()" class="btn-primary text-xs">Add New Category</button>
+          </div>
+          <div id="admin-categories-list" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Injected via JavaScript -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Sub-View: Manage Payments -->
+      <div id="admin-subview-payments" class="hidden space-y-4">
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+          <div class="p-4 border-b border-slate-200">
+            <h3 class="font-bold text-slate-900">Payment Gateway Transactions</h3>
+            <p class="text-xs text-slate-500">Includes payment processor references, card authorization, and refund status.</p>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-600">
+              <thead class="bg-slate-50 text-xs font-bold text-slate-500 uppercase border-b border-slate-200">
+                <tr>
+                  <th class="px-6 py-3.5">Payment ID</th>
+                  <th class="px-6 py-3.5">Order ID</th>
+                  <th class="px-6 py-3.5">Customer</th>
+                  <th class="px-6 py-3.5">Amount</th>
+                  <th class="px-6 py-3.5">Method & Gateway Ref</th>
+                  <th class="px-6 py-3.5">Status</th>
+                  <th class="px-6 py-3.5 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-payments-table-body" class="divide-y divide-slate-200">
+                <!-- Injected via JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Sub-View: Generate Reports -->
+      <div id="admin-subview-reports" class="hidden space-y-6">
+        <!-- KPI Metrics -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <p class="text-xs font-medium text-slate-500 uppercase">Total Revenue</p>
+            <p id="kpi-revenue" class="text-2xl font-black text-slate-900 mt-1">₹0.00</p>
+            <p class="text-[11px] text-emerald-600 mt-2 font-medium">Verified Gateway Receipts</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <p class="text-xs font-medium text-slate-500 uppercase">Total Orders</p>
+            <p id="kpi-orders" class="text-2xl font-black text-slate-900 mt-1">0</p>
+            <p class="text-[11px] text-blue-600 mt-2 font-medium">Across all statuses</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <p class="text-xs font-medium text-slate-500 uppercase">Customers (Approved / Pending)</p>
+            <p id="kpi-customers" class="text-2xl font-black text-slate-900 mt-1">0 / 0</p>
+            <p class="text-[11px] text-amber-600 mt-2 font-medium">Manual email verification enabled</p>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <p class="text-xs font-medium text-slate-500 uppercase">Avg Order Value</p>
+            <p id="kpi-aov" class="text-2xl font-black text-slate-900 mt-1">₹0.00</p>
+            <p class="text-[11px] text-purple-600 mt-2 font-medium">Per completed transaction</p>
+          </div>
+        </div>
+
+        <!-- Breakdown Charts & Top Sellers -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Sales by Category -->
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <h4 class="font-bold text-slate-900 mb-4">Sales by Category</h4>
+            <div id="category-report-bars" class="space-y-3">
+              <!-- Injected via JavaScript -->
+            </div>
+          </div>
+
+          <!-- Top Selling Products -->
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <h4 class="font-bold text-slate-900 mb-4">Top Performing Products</h4>
+            <div id="top-products-list" class="space-y-3">
+              <!-- Injected via JavaScript -->
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end">
+          <button onclick="window.printReport()" class="btn-secondary text-xs">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            Print / Export Report Summary
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODALS & SLIDE-OVER PANELS                 -->
+  <!-- ========================================== -->
+
+  <!-- 1. Cart Slide-Over Drawer -->
+  <div id="cart-drawer-overlay" class="drawer-overlay" onclick="window.toggleCart()"></div>
+  <aside id="cart-drawer" class="drawer-panel">
+    <div class="p-4 border-b border-slate-200 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <h3 class="font-bold text-slate-900">Your Shopping Cart</h3>
+        <span id="drawer-cart-count" class="px-2 py-0.5 rounded-full text-xs bg-blue-100 text-blue-700 font-bold">0</span>
+      </div>
+      <button onclick="window.toggleCart()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+
+    <!-- Items List -->
+    <div id="cart-items-container" class="flex-1 overflow-y-auto p-4 space-y-3">
+      <!-- Injected via JavaScript -->
+    </div>
+
+    <!-- Summary & Checkout Footer -->
+    <div class="p-4 border-t border-slate-200 bg-slate-50 space-y-3">
+      <div class="space-y-1.5 text-xs text-slate-600">
+        <div class="flex justify-between">
+          <span>Subtotal:</span>
+          <span id="cart-subtotal" class="font-semibold text-slate-800">₹0.00</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Estimated GST (18%):</span>
+          <span id="cart-tax" class="font-semibold text-slate-800">₹0.00</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Shipping:</span>
+          <span id="cart-shipping" class="font-semibold text-slate-800">₹0.00</span>
+        </div>
+        <div class="flex justify-between text-sm font-bold text-slate-900 pt-2 border-t border-slate-200">
+          <span>Total:</span>
+          <span id="cart-total" class="text-blue-600 text-base">₹0.00</span>
+        </div>
+      </div>
+
+      <button id="checkout-btn" onclick="window.startCheckout()" class="w-full btn-primary text-sm py-3 font-bold shadow-md">
+        Proceed to Secure Checkout &rarr;
+      </button>
+    </div>
+  </aside>
+
+  <!-- 2. Product Details & Reviews Modal (View Product Details + Add Review) -->
+  <div id="product-modal" class="modal-overlay">
+    <div class="modal-card max-w-3xl">
+      <div id="product-modal-content">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Multi-Step Checkout & Payment Gateway Modal (Place Order + Make Payment + Process Payment) -->
+  <div id="checkout-modal" class="modal-overlay">
+    <div class="modal-card max-w-xl p-6">
+      <div id="checkout-modal-content">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Order Tracking Modal (Track Order + Update Delivery Status + Cancel Order) -->
+  <div id="tracking-modal" class="modal-overlay">
+    <div class="modal-card max-w-xl p-6">
+      <div id="tracking-modal-content">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. User Authentication Modal (Register / Login) -->
+  <div id="auth-modal" class="modal-overlay">
+    <div class="modal-card max-w-md p-6">
+      <div id="auth-modal-content">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. In-App Mailbox Viewer (Preview Dispatched Approval & Order Emails) -->
+  <div id="mailbox-modal" class="modal-overlay">
+    <div class="modal-card max-w-3xl p-6">
+      <div id="mailbox-modal-content">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Admin Add/Edit Product Modal -->
+  <div id="admin-product-modal" class="modal-overlay">
+    <div class="modal-card max-w-lg p-6">
+      <div id="admin-product-modal-content">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Message Container -->
+  <div id="toast-container"></div>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 mt-12 py-8 text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        <p class="font-semibold text-slate-800">OmniStore E-Commerce Architecture</p>
+        <p class="mt-0.5">Complies fully with UML diagram: Customer, Admin, Payment Gateway, Delivery Service.</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <span>Admin Verification System Active</span>
+        <span>&bull;</span>
+        <button onclick="window.openMailbox()" class="text-blue-600 hover:underline">View Mailbox Logs</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Script -->
+  <script src="/js/app.js"></script>
+</body>
+</html>
