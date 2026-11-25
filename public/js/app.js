@@ -208,6 +208,14 @@
     }
     try {
       const data = await api('/api/auth/me');
+      // If user was previously saved as the John demo customer, clear it so visitor starts as guest
+      if (data.user && data.user.email === 'john@example.com') {
+        state.token = null;
+        state.user = null;
+        localStorage.removeItem('omnistore_token');
+        renderAuthNav();
+        return;
+      }
       state.user = data.user;
       renderAuthNav();
       checkAccountAlert();
@@ -254,19 +262,29 @@
               ${isPending ? '<span class="px-1.5 py-0.2 rounded text-[10px] bg-amber-400 text-slate-900 font-bold">Pending</span>' : ''}
             </div>
           </div>
+          <button onclick="window.openTrackOrderModal()" class="text-left text-white hover:outline hover:outline-1 hover:outline-white p-1 rounded leading-tight hidden lg:block" title="Returns & Orders">
+            <div class="text-[10px] text-slate-300">Returns</div>
+            <div class="text-xs font-bold text-white">& Orders</div>
+          </button>
           <button onclick="window.logout()" class="p-1.5 text-slate-300 hover:text-white rounded hover:bg-slate-800 border border-slate-700" title="Sign Out">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
           </button>
         </div>
       `;
     } else {
+      // Amazon Guest State: "Hello, sign in | Account & Lists"
       container.innerHTML = `
-        <div class="flex items-center gap-1">
-          <button onclick="window.openAuthModal('login')" class="btn-amazon-cart text-xs py-1 px-3 shadow-xs font-bold">
-            Sign In
+        <div class="flex items-center gap-2">
+          <button onclick="window.openAuthModal('login')" class="text-left text-white hover:outline hover:outline-1 hover:outline-white p-1 rounded leading-tight cursor-pointer" title="Sign In to your account">
+            <div class="text-[10px] text-slate-300">Hello, sign in</div>
+            <div class="text-xs font-bold text-white flex items-center gap-0.5">
+              Account & Lists
+              <svg class="w-3 h-3 text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+            </div>
           </button>
-          <button onclick="window.openAuthModal('register')" class="text-xs text-slate-300 hover:text-[#febd69] px-2 py-1 font-semibold hidden sm:inline">
-            Register
+          <button onclick="window.openTrackOrderModal()" class="text-left text-white hover:outline hover:outline-1 hover:outline-white p-1 rounded leading-tight hidden lg:block cursor-pointer" title="Returns & Orders">
+            <div class="text-[10px] text-slate-300">Returns</div>
+            <div class="text-xs font-bold text-white">& Orders</div>
           </button>
         </div>
       `;
@@ -1941,10 +1959,9 @@
           </form>
 
           <div class="pt-3 border-t border-slate-200 space-y-1.5 text-center">
-            <p class="text-[11px] text-slate-400">Fill Credentials:</p>
+            <p class="text-[11px] text-slate-400">Quick Administrator Access:</p>
             <div class="flex justify-center gap-2">
-              <button type="button" onclick="window.fillLoginForm('admin@store.com', 'admin123')" class="px-2 py-1 rounded bg-purple-50 text-purple-700 border border-purple-200 text-[11px] font-semibold hover:bg-purple-100">Admin (admin@store.com)</button>
-              <button type="button" onclick="window.fillLoginForm('john@example.com', 'customer123')" class="px-2 py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-semibold hover:bg-emerald-100">Customer (john@example.com)</button>
+              <button type="button" onclick="window.fillLoginForm('admin@store.com', 'admin123')" class="px-3 py-1 rounded bg-purple-50 text-purple-700 border border-purple-200 text-[11px] font-semibold hover:bg-purple-100">Admin (admin@store.com)</button>
             </div>
           </div>
         </div>
@@ -2082,7 +2099,6 @@
   window.demoLogin = async function (role) {
     try {
       let email = 'admin@store.com';
-      if (role === 'customer') email = 'john@example.com';
       if (role === 'pending') email = 'alice@example.com';
 
       const data = await api('/api/auth/demo-login', {

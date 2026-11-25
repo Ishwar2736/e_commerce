@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OmniStore.in: Great Indian Festival Deals, Electronics, Audio, Wearables & More</title>
+  <title>Online Shopping site in India: Shop Online for Mobiles, Electronics, Audio, Wearables & More - OmniStore.in</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/css/style.css">
   <script>
@@ -32,15 +32,15 @@
 </head>
 <body class="bg-[#eaeded] text-[#0f1111] min-h-screen flex flex-col font-sans">
 
-  <!-- Top Global Announcement Bar (Amazon Festive Gold / Dark Bar) -->
+  <!-- Top Global Announcement Bar (Amazon Dark Bar) -->
   <div class="bg-[#131921] text-slate-300 text-xs py-1.5 px-4 border-b border-slate-800">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
       <div class="flex items-center gap-3">
         <span class="inline-flex items-center px-2 py-0.5 rounded bg-[#febd69] text-slate-900 font-extrabold text-[11px] tracking-wide">
-          GREAT INDIAN FESTIVAL
+          ⚡ TOP OFFERS
         </span>
         <span class="text-slate-300 font-medium hidden sm:inline">
-          Extra 20% OFF with code <strong class="text-[#febd69] font-mono">FESTIVE20</strong> &bull; Free Express Delivery on ₹999+
+          Save up to 50% on top electronics, audio & wearables &bull; Free Express Delivery on ₹499+
         </span>
       </div>
       <div class="flex items-center gap-4 text-[11px]">
@@ -49,10 +49,8 @@
           <span>Deliver to <strong class="text-white font-bold">India 560038</strong></span>
         </div>
         <span class="text-slate-600">|</span>
-        <!-- Quick Login Shortcuts -->
+        <!-- Admin Access Shortcut -->
         <button onclick="window.openAuthModal('login', 'admin@store.com')" class="text-[#febd69] hover:underline font-semibold">Admin (admin@store.com)</button>
-        <span class="text-slate-600">|</span>
-        <button onclick="window.openAuthModal('login', 'john@example.com')" class="text-slate-300 hover:text-white hover:underline">Customer (john@example.com)</button>
       </div>
     </div>
   </div>
@@ -163,27 +161,27 @@
     </div>
 
     <!-- Secondary Amazon Sub-Navigation Bar -->
-    <div class="amazon-subnav px-4 py-1.5 text-xs text-white flex items-center gap-1 overflow-x-auto scrollbar-none border-t border-slate-700/60">
-      <button onclick="window.filterCategory('all')" class="font-bold flex items-center gap-1 text-white hover:border-white">
+    <div class="amazon-subnav px-4 py-1.5 text-xs text-white flex items-center gap-2 overflow-x-auto scrollbar-none border-t border-slate-700/60">
+      <button onclick="window.filterCategory('all')" class="font-bold flex items-center gap-1 text-white hover:border-white px-1 py-0.5 rounded">
         <span>☰ All</span>
       </button>
-      <span class="text-slate-600">|</span>
-      <button onclick="window.filterCategory('all')" class="text-[#febd69] font-extrabold flex items-center gap-1 hover:border-white">
-        <span>🔥 Great Indian Festival</span>
+      <button onclick="window.startCheckout()" class="text-white hover:text-[#febd69] font-medium px-1">Amazon Pay</button>
+      <button onclick="window.filterCategory('electronics')" class="text-white hover:text-[#febd69] font-medium px-1">Mobiles & Gadgets</button>
+      <button onclick="window.filterCategory('all')" class="text-white hover:text-[#febd69] font-medium px-1">Today's Deals</button>
+      <button onclick="window.startCheckout()" class="text-emerald-400 font-bold flex items-center gap-1 px-1">
+        <span>🎟️ Coupons</span>
       </button>
-      <button onclick="window.filterCategory('electronics')" class="hover:text-[#febd69]">Electronics</button>
-      <button onclick="window.filterCategory('audio')" class="hover:text-[#febd69]">Audio & Sound</button>
-      <button onclick="window.filterCategory('wearables')" class="hover:text-[#febd69]">Wearables & Watches</button>
-      <button onclick="window.filterCategory('home')" class="hover:text-[#febd69]">Home & Lifestyle</button>
-      <button onclick="window.filterCategory('accessories')" class="hover:text-[#febd69]">Accessories</button>
-      <button onclick="window.startCheckout()" class="text-emerald-400 font-bold flex items-center gap-1">
-        <span>🎟️ Coupons & Deals</span>
-      </button>
-      <button onclick="window.openTrackOrderModal()" class="text-sky-300 font-semibold flex items-center gap-1">
+      <button onclick="window.handleSort('rating')" class="text-white hover:text-[#febd69] font-medium px-1">Bestsellers</button>
+      <button onclick="window.filterCategory('electronics')" class="text-white hover:text-[#febd69] font-medium px-1">Electronics</button>
+      <button onclick="window.filterCategory('audio')" class="text-white hover:text-[#febd69] font-medium px-1">Audio & Sound</button>
+      <button onclick="window.filterCategory('wearables')" class="text-white hover:text-[#febd69] font-medium px-1">Wearables</button>
+      <button onclick="window.filterCategory('home')" class="text-white hover:text-[#febd69] font-medium px-1">Home & Kitchen</button>
+      <button onclick="window.openTrackOrderModal()" class="text-sky-300 font-semibold flex items-center gap-1 px-1">
         <span>📦 Track Order</span>
       </button>
-      <div class="ml-auto hidden md:flex items-center gap-1 text-[11px] text-[#febd69] font-bold">
-        <span>👑 Prime: FREE 1-Day Delivery</span>
+      <div class="ml-auto hidden md:flex items-center gap-2 text-[11px]">
+        <span class="bg-[#007185] text-white px-2 py-0.5 rounded text-[10px] font-bold">PRIME</span>
+        <span class="text-slate-200">Join Prime Lite at <strong class="text-white font-extrabold">₹67/month*</strong></span>
       </div>
     </div>
   </header>
@@ -208,76 +206,175 @@
     <!-- ========================================== -->
     <section id="view-store" class="space-y-6">
       
-      <!-- Amazon Great Indian Festival Hero Banner -->
-      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#141b24] via-[#1f2c3f] to-[#b12704] text-white p-6 sm:p-10 shadow-xl border border-amber-500/20">
-        <!-- Festive Background Accents -->
-        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -left-10 -top-10 w-64 h-64 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
-
-        <div class="relative z-10 max-w-3xl space-y-4">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 uppercase tracking-wider shadow">
-            <span>✨ GREAT INDIAN FESTIVAL IS LIVE</span>
+      <!-- Amazon Multi-Card Promotional Hero Grid (Direct Match to Amazon.in) -->
+      <div class="relative">
+        <!-- 5 Colorful Amazon Feature Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
+          
+          <!-- Card 1: OmniStore Bazaar (Coral/Red Header + 6-item Product Matrix) -->
+          <div onclick="window.filterCategory('all')" class="group rounded-2xl overflow-hidden shadow-xs hover:shadow-md border border-slate-200 bg-white transition duration-200 flex flex-col justify-between cursor-pointer">
+            <div class="bg-gradient-to-r from-[#eb384c] to-[#ff5757] text-white p-3.5">
+              <div class="text-xs font-semibold text-rose-100">Get up to</div>
+              <div class="text-2xl font-black leading-tight">₹100 cashback*</div>
+              <div class="text-[11px] font-medium text-rose-100 mt-0.5">Lowest prices on OmniStore</div>
+              <div class="mt-2 inline-flex items-center gap-1.5 bg-white/20 px-2 py-0.5 rounded text-[10px] font-extrabold backdrop-blur-xs">
+                <span class="italic text-[#febd69]">bazaar</span>
+                <span class="text-white">Free Delivery</span>
+              </div>
+            </div>
+            <div class="p-2.5 bg-white flex-1 flex flex-col justify-between">
+              <div class="grid grid-cols-3 gap-1.5">
+                <div class="flex flex-col items-center p-1 rounded-lg bg-slate-50 border border-slate-100 hover:bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=150&q=80" alt="Watch" class="w-11 h-11 object-contain">
+                  <span class="text-[9px] font-bold text-slate-700 mt-1 truncate max-w-full">Watches</span>
+                </div>
+                <div class="flex flex-col items-center p-1 rounded-lg bg-slate-50 border border-slate-100 hover:bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?w=150&q=80" alt="Jacket" class="w-11 h-11 object-contain">
+                  <span class="text-[9px] font-bold text-slate-700 mt-1 truncate max-w-full">Fashion</span>
+                </div>
+                <div class="flex flex-col items-center p-1 rounded-lg bg-slate-50 border border-slate-100 hover:bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=150&q=80" alt="Ceramic Mug" class="w-11 h-11 object-contain">
+                  <span class="text-[9px] font-bold text-slate-700 mt-1 truncate max-w-full">Home</span>
+                </div>
+                <div class="flex flex-col items-center p-1 rounded-lg bg-slate-50 border border-slate-100 hover:bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=150&q=80" alt="Backpack" class="w-11 h-11 object-contain">
+                  <span class="text-[9px] font-bold text-slate-700 mt-1 truncate max-w-full">Bags</span>
+                </div>
+                <div class="flex flex-col items-center p-1 rounded-lg bg-slate-50 border border-slate-100 hover:bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=150&q=80" alt="Lamp" class="w-11 h-11 object-contain">
+                  <span class="text-[9px] font-bold text-slate-700 mt-1 truncate max-w-full">Decor</span>
+                </div>
+                <div class="flex flex-col items-center p-1 rounded-lg bg-slate-50 border border-slate-100 hover:bg-slate-100">
+                  <img src="https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=150&q=80" alt="Earbuds" class="w-11 h-11 object-contain">
+                  <span class="text-[9px] font-bold text-slate-700 mt-1 truncate max-w-full">Audio</span>
+                </div>
+              </div>
+              <div class="pt-2 text-[11px] font-bold text-[#007185] group-hover:text-[#c7511f]">
+                Explore all bazaar deals &rarr;
+              </div>
+            </div>
           </div>
 
-          <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight text-white drop-shadow">
-            Big Savings. Top Brands.<br>
-            <span class="text-[#febd69]">Up to 50% Off</span> + Instant Coupons.
-          </h1>
-
-          <p class="text-slate-200 text-xs sm:text-sm leading-relaxed max-w-xl">
-            Explore 20 curated electronics, audio, wearables, and home lifestyle products in Indian Rupees. Enjoy zero delivery fee on orders above ₹999 and lightning-fast doorstep dispatch.
-          </p>
-
-          <!-- Interactive Coupon Pills inside banner -->
-          <div class="pt-1 flex flex-wrap items-center gap-2 text-xs">
-            <span class="text-amber-200 font-bold">Apply coupons at checkout:</span>
-            <span class="px-2.5 py-1 rounded bg-[#232f3e] border border-amber-400/50 text-[#febd69] font-mono font-bold">FESTIVE20 (20% OFF)</span>
-            <span class="px-2.5 py-1 rounded bg-[#232f3e] border border-amber-400/50 text-[#febd69] font-mono font-bold">FLAT500 (₹500 OFF)</span>
-            <span class="px-2.5 py-1 rounded bg-[#232f3e] border border-amber-400/50 text-[#febd69] font-mono font-bold">FREESHIP (Free Delivery)</span>
+          <!-- Card 2: Apparel Under ₹299 (Clean Studio Off-White) -->
+          <div onclick="window.filterCategory('accessories')" class="group rounded-2xl overflow-hidden shadow-xs hover:shadow-md border border-slate-200 bg-[#f8f9fa] p-3.5 transition duration-200 flex flex-col justify-between cursor-pointer">
+            <div>
+              <div class="text-xl font-black text-slate-900 leading-tight">All Under ₹299</div>
+              <div class="text-xs text-slate-600 font-semibold mt-0.5">T-shirt & polos</div>
+              <div class="mt-1.5 inline-flex items-center gap-1 text-[10px] font-bold text-slate-800">
+                <span class="italic font-black text-[#eb384c]">bazaar</span>
+                <span class="text-slate-600 font-medium">Free Delivery</span>
+              </div>
+            </div>
+            <div class="my-2.5 rounded-xl overflow-hidden bg-white border border-slate-200/80 aspect-[4/3] flex items-center justify-center relative shadow-inner">
+              <img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500&q=80" alt="Apparel" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+              <span class="absolute bottom-1.5 right-1.5 bg-slate-900/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">₹199+</span>
+            </div>
+            <div class="text-[11px] font-bold text-[#007185] group-hover:text-[#c7511f]">
+              See more styles &rarr;
+            </div>
           </div>
 
-          <div class="flex flex-wrap gap-3 pt-2">
-            <button onclick="window.filterCategory('all')" class="btn-amazon-cart text-sm py-2.5 px-6 font-black shadow-lg">
-              Shop Festive Deals Now &rarr;
+          <!-- Card 3: Gaming & Tech Finds (Warm Peach / Terracotta) -->
+          <div onclick="window.filterCategory('electronics')" class="group rounded-2xl overflow-hidden shadow-xs hover:shadow-md border border-orange-200 bg-gradient-to-b from-[#fbeee6] via-[#fce4d6] to-[#f8d7c4] p-3.5 transition duration-200 flex flex-col justify-between cursor-pointer">
+            <div>
+              <div class="text-xl font-black text-[#9a3412] leading-tight">Starting ₹299</div>
+              <div class="text-xs text-slate-700 font-semibold mt-0.5">Fun finds for gaming & tech</div>
+            </div>
+            <div class="my-2.5 rounded-xl overflow-hidden bg-white/90 border border-orange-200/80 aspect-[4/3] flex items-center justify-center relative shadow-inner">
+              <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500&q=80" alt="Gaming" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+              <span class="absolute top-1.5 left-1.5 bg-[#9a3412] text-white text-[9px] font-black px-1.5 py-0.5 rounded uppercase">Bestseller</span>
+            </div>
+            <div class="bg-white/85 p-1.5 rounded-lg text-[10px] text-slate-800 font-bold border border-orange-300/60 mb-2 flex items-center gap-1">
+              <span class="text-emerald-700">💳 5% Cashback</span> with OmniPay
+            </div>
+            <div class="text-[11px] font-bold text-[#9a3412] group-hover:underline">
+              Shop gaming deals &rarr;
+            </div>
+          </div>
+
+          <!-- Card 4: FunZone Rewards & Coupons (Sky Blue) -->
+          <div onclick="window.startCheckout()" class="group rounded-2xl overflow-hidden shadow-xs hover:shadow-md border border-sky-300 bg-gradient-to-b from-[#e0f2fe] via-[#bae6fd] to-[#7dd3fc] p-3.5 transition duration-200 flex flex-col justify-between cursor-pointer">
+            <div>
+              <div class="text-xl font-black text-[#0369a1] leading-tight">Win up to ₹300 back</div>
+              <div class="text-[10px] font-black tracking-wider text-sky-900 mt-0.5 uppercase">🎯 FUNZONE REWARDS</div>
+            </div>
+            <div class="my-2.5 rounded-xl overflow-hidden bg-white/90 border border-sky-200/80 aspect-[4/3] flex items-center justify-center relative shadow-inner">
+              <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&q=80" alt="FunZone" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+              <span class="absolute bottom-1.5 left-1.5 bg-[#0284c7] text-white text-[9px] font-bold px-1.5 py-0.5 rounded">Spin & Win</span>
+            </div>
+            <div class="bg-[#0369a1] text-white p-1.5 rounded-lg text-[10px] text-center font-bold mb-1 hover:bg-[#0284c7]">
+              Apply Coupon: FLAT500
+            </div>
+            <div class="text-[10px] text-sky-950 font-medium flex justify-between items-center">
+              <span>*T&C apply</span>
+              <span class="font-bold text-[#0369a1]">Claim &rarr;</span>
+            </div>
+          </div>
+
+          <!-- Card 5: Shoes & Footwear (Warm Sand / Natural Tan) -->
+          <div onclick="window.filterCategory('accessories')" class="group rounded-2xl overflow-hidden shadow-xs hover:shadow-md border border-amber-200 bg-gradient-to-b from-[#fbf7f2] via-[#f5ede1] to-[#ebe0cf] p-3.5 transition duration-200 flex flex-col justify-between cursor-pointer">
+            <div>
+              <div class="text-xl font-black text-[#5c3d2e] leading-tight">Under ₹399</div>
+              <div class="text-xs text-slate-700 font-semibold mt-0.5">Shoes & sneakers</div>
+              <div class="mt-1.5 inline-flex items-center gap-1 text-[10px] font-bold text-slate-800">
+                <span class="italic font-black text-[#eb384c]">bazaar</span>
+                <span class="text-slate-600 font-medium">Free Delivery</span>
+              </div>
+            </div>
+            <div class="my-2.5 rounded-xl overflow-hidden bg-white/90 border border-amber-200/80 aspect-[4/3] flex items-center justify-center relative shadow-inner">
+              <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80" alt="Sneakers" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+              <span class="absolute top-1.5 right-1.5 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">Trending</span>
+            </div>
+            <div class="text-[11px] font-bold text-[#5c3d2e] group-hover:underline">
+              Browse footwear &rarr;
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Horizontal Quick Category Deals Navigation (Matching Amazon.in sub-strip) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
+          <div onclick="window.filterCategory('all'); window.handleSort('rating');" class="bg-white p-3 rounded-xl border border-slate-200 hover:border-[#ff9900] shadow-2xs flex items-center justify-between cursor-pointer group transition">
+            <span class="text-xs font-bold text-slate-800 group-hover:text-[#007185]">Customers' Most-Loved Products</span>
+            <span class="text-slate-400 group-hover:text-[#ff9900] font-black text-sm">&rsaquo;</span>
+          </div>
+          <div onclick="window.filterCategory('electronics')" class="bg-white p-3 rounded-xl border border-slate-200 hover:border-[#ff9900] shadow-2xs flex items-center justify-between cursor-pointer group transition">
+            <span class="text-xs font-bold text-slate-800 group-hover:text-[#007185]">Lowest prices on OmniStore + Extra 15% cashback</span>
+            <span class="text-slate-400 group-hover:text-[#ff9900] font-black text-sm">&rsaquo;</span>
+          </div>
+          <div onclick="window.filterCategory('audio')" class="bg-white p-3 rounded-xl border border-slate-200 hover:border-[#ff9900] shadow-2xs flex items-center justify-between cursor-pointer group transition">
+            <span class="text-xs font-bold text-slate-800 group-hover:text-[#007185]">Bestselling Audio & Soundbars</span>
+            <span class="text-slate-400 group-hover:text-[#ff9900] font-black text-sm">&rsaquo;</span>
+          </div>
+          <div onclick="window.filterCategory('wearables')" class="bg-white p-3 rounded-xl border border-slate-200 hover:border-[#ff9900] shadow-2xs flex items-center justify-between cursor-pointer group transition">
+            <span class="text-xs font-bold text-slate-800 group-hover:text-[#007185]">Smartwatches & Wearable Devices</span>
+            <span class="text-slate-400 group-hover:text-[#ff9900] font-black text-sm">&rsaquo;</span>
+          </div>
+        </div>
+
+        <!-- Active Promotional Coupon Toolbar -->
+        <div class="bg-gradient-to-r from-[#232f3e] to-[#131921] rounded-xl p-3 px-4 text-white flex flex-wrap items-center justify-between gap-3 border border-amber-400/30 mt-4 shadow-sm">
+          <div class="flex items-center gap-2">
+            <span class="text-amber-400 font-extrabold text-xs flex items-center gap-1">
+              <span>🎟️</span> ACTIVE SAVINGS COUPONS:
+            </span>
+            <span class="text-slate-300 text-xs hidden md:inline">Click any coupon code to automatically apply to checkout</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 text-xs">
+            <button onclick="window.applyCoupon('WELCOME10'); showToast('Coupon WELCOME10 selected for 10% OFF!', 'success');" class="px-2.5 py-1 rounded bg-[#1a222d] border border-amber-400/60 text-[#febd69] font-mono font-bold hover:bg-amber-400 hover:text-slate-900 transition">
+              WELCOME10 (10% OFF)
             </button>
-            <button onclick="window.openTrackOrderModal()" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-5 py-2.5 rounded-full font-bold text-xs transition">
-              Track Your Shipment &rarr;
+            <button onclick="window.applyCoupon('FLAT500'); showToast('Coupon FLAT500 selected for ₹500 OFF!', 'success');" class="px-2.5 py-1 rounded bg-[#1a222d] border border-amber-400/60 text-[#febd69] font-mono font-bold hover:bg-amber-400 hover:text-slate-900 transition">
+              FLAT500 (₹500 OFF)
+            </button>
+            <button onclick="window.applyCoupon('FREESHIP'); showToast('Coupon FREESHIP selected for Free Delivery!', 'success');" class="px-2.5 py-1 rounded bg-[#1a222d] border border-amber-400/60 text-[#febd69] font-mono font-bold hover:bg-amber-400 hover:text-slate-900 transition">
+              FREESHIP (Free Delivery)
+            </button>
+            <button onclick="window.applyCoupon('MEGA50'); showToast('Coupon MEGA50 selected for 50% OFF!', 'success');" class="px-2.5 py-1 rounded bg-[#1a222d] border border-amber-400/60 text-[#febd69] font-mono font-bold hover:bg-amber-400 hover:text-slate-900 transition">
+              MEGA50 (50% OFF)
             </button>
           </div>
         </div>
-      </div>
-
-      <!-- Amazon 4-Card Deal Feature Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        
-        <div onclick="window.filterCategory('electronics')" class="deal-feature-card hover:border-[#ff9900]">
-          <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#b12704] bg-red-50 px-2 py-0.5 rounded">Mega Deal</span>
-          <h3 class="text-base font-bold text-slate-900 mt-2">Up to 40% Off | Electronics</h3>
-          <p class="text-xs text-slate-500 mt-1">4K monitors, mechanical keyboards, chargers & more.</p>
-          <span class="inline-block mt-3 text-xs font-bold text-[#007185] hover:text-[#c7511f]">See all deals &rarr;</span>
-        </div>
-
-        <div onclick="window.filterCategory('audio')" class="deal-feature-card hover:border-[#ff9900]">
-          <span class="text-[10px] font-extrabold uppercase tracking-wider text-purple-700 bg-purple-50 px-2 py-0.5 rounded">Trending Audio</span>
-          <h3 class="text-base font-bold text-slate-900 mt-2">Starting ₹1,299 | Headphones</h3>
-          <p class="text-xs text-slate-500 mt-1">Active noise cancellation, studio mics & soundbars.</p>
-          <span class="inline-block mt-3 text-xs font-bold text-[#007185] hover:text-[#c7511f]">Explore audio &rarr;</span>
-        </div>
-
-        <div onclick="window.filterCategory('wearables')" class="deal-feature-card hover:border-[#ff9900]">
-          <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">Best Sellers</span>
-          <h3 class="text-base font-bold text-slate-900 mt-2">Min. 30% Off | Wearables</h3>
-          <p class="text-xs text-slate-500 mt-1">Smartwatches, AMOLED displays & fitness trackers.</p>
-          <span class="inline-block mt-3 text-xs font-bold text-[#007185] hover:text-[#c7511f]">Browse smartwatches &rarr;</span>
-        </div>
-
-        <div onclick="window.startCheckout()" class="deal-feature-card hover:border-[#ff9900]">
-          <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-700 bg-amber-50 px-2 py-0.5 rounded">Coupons Central</span>
-          <h3 class="text-base font-bold text-slate-900 mt-2">Save Extra ₹500 Today</h3>
-          <p class="text-xs text-slate-500 mt-1">Instant discount coupons applied before payment.</p>
-          <span class="inline-block mt-3 text-xs font-bold text-[#007185] hover:text-[#c7511f]">View coupon codes &rarr;</span>
-        </div>
-
       </div>
 
       <!-- Categories & Filter Toolbar (Browse Products Use Case) -->
