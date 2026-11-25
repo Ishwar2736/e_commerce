@@ -245,28 +245,30 @@
       const isPending = state.user.status === 'pending_approval';
 
       container.innerHTML = `
-        <div class="flex items-center gap-2">
-          <div class="text-right hidden sm:block">
-            <div class="text-xs font-bold text-slate-900 flex items-center justify-end gap-1">
-              ${escapeHtml(state.user.name)}
-              ${isAdmin ? '<span class="px-1.5 py-0.2 rounded text-[10px] bg-purple-100 text-purple-700 font-bold">Admin</span>' : ''}
-              ${isPending ? '<span class="px-1.5 py-0.2 rounded text-[10px] bg-amber-100 text-amber-700 font-bold">Pending</span>' : ''}
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <div class="text-right hidden sm:block leading-tight">
+            <div class="text-[10px] text-slate-300">Hello, ${escapeHtml(state.user.name.split(' ')[0])}</div>
+            <div class="text-xs font-bold text-white flex items-center justify-end gap-1">
+              Account & Lists
+              ${isAdmin ? '<span class="px-1.5 py-0.2 rounded text-[10px] bg-[#febd69] text-slate-900 font-extrabold">Admin</span>' : ''}
+              ${isPending ? '<span class="px-1.5 py-0.2 rounded text-[10px] bg-amber-400 text-slate-900 font-bold">Pending</span>' : ''}
             </div>
-            <div class="text-[11px] text-slate-500">${escapeHtml(state.user.email)}</div>
           </div>
-          <button onclick="window.logout()" class="p-2 text-slate-500 hover:text-red-600 rounded-lg hover:bg-red-50 border border-slate-200" title="Sign Out">
+          <button onclick="window.logout()" class="p-1.5 text-slate-300 hover:text-white rounded hover:bg-slate-800 border border-slate-700" title="Sign Out">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
           </button>
         </div>
       `;
     } else {
       container.innerHTML = `
-        <button onclick="window.openAuthModal('login')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 border border-slate-200">
-          Sign In
-        </button>
-        <button onclick="window.openAuthModal('register')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 shadow-sm">
-          Register
-        </button>
+        <div class="flex items-center gap-1">
+          <button onclick="window.openAuthModal('login')" class="btn-amazon-cart text-xs py-1 px-3 shadow-xs font-bold">
+            Sign In
+          </button>
+          <button onclick="window.openAuthModal('register')" class="text-xs text-slate-300 hover:text-[#febd69] px-2 py-1 font-semibold hidden sm:inline">
+            Register
+          </button>
+        </div>
       `;
     }
   }
@@ -285,6 +287,15 @@
   // PRODUCTS & CATEGORIES
   // ==========================================
 
+  const CATEGORY_ICONS = {
+    'all': '🛍️',
+    'electronics': '💻',
+    'audio': '🎧',
+    'wearables': '⌚',
+    'home': '🏠',
+    'accessories': '🎒'
+  };
+
   async function loadCategories() {
     try {
       const data = await api('/api/categories');
@@ -300,16 +311,17 @@
     if (!container) return;
 
     let html = `
-      <button onclick="window.filterCategory('all')" class="category-pill whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-semibold border ${state.activeCategory === 'all' ? 'active' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'}">
-        All Items
+      <button onclick="window.filterCategory('all')" class="category-pill whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-bold border ${state.activeCategory === 'all' ? 'active' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100 shadow-xs'}">
+        🛍️ All Items
       </button>
     `;
 
     for (const cat of state.categories) {
       const isActive = state.activeCategory === cat.id;
+      const icon = CATEGORY_ICONS[cat.id] || '📦';
       html += `
-        <button onclick="window.filterCategory('${cat.id}')" class="category-pill whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-semibold border ${isActive ? 'active' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'}">
-          ${escapeHtml(cat.name)} <span class="opacity-60 text-[10px]">(${cat.itemCount})</span>
+        <button onclick="window.filterCategory('${cat.id}')" class="category-pill whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-bold border ${isActive ? 'active' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100 shadow-xs'}">
+          ${icon} ${escapeHtml(cat.name)} <span class="opacity-70 text-[10px] ml-0.5">(${cat.itemCount})</span>
         </button>
       `;
     }
@@ -341,9 +353,9 @@
 
     if (!state.products.length) {
       grid.innerHTML = `
-        <div class="col-span-full py-16 text-center text-slate-500">
+        <div class="col-span-full py-16 text-center text-slate-500 bg-white rounded-2xl border border-slate-200">
           <p class="text-base font-semibold">No products found matching your search criteria.</p>
-          <button onclick="window.filterCategory('all')" class="mt-3 text-xs text-blue-600 hover:underline">Reset Filters</button>
+          <button onclick="window.filterCategory('all')" class="mt-3 btn-amazon-cart text-xs py-1.5 px-4 font-bold">Reset Filters</button>
         </div>
       `;
       return;
@@ -351,48 +363,95 @@
 
     grid.innerHTML = state.products.map(p => {
       const isOutOfStock = p.stock <= 0;
+      const mrp = Math.round(p.price * 1.35);
+      const discountPercent = Math.round(((mrp - p.price) / mrp) * 100);
+
       return `
-        <div class="product-card bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col shadow-sm">
-          <!-- Thumbnail & Quick Badge -->
-          <div class="relative bg-slate-100 aspect-square overflow-hidden cursor-pointer" onclick="window.openProductModal('${p.id}')">
-            <img src="${p.image}" alt="${escapeHtml(p.name)}" class="w-full h-full object-cover hover:scale-105 transition duration-300">
-            ${p.featured ? '<span class="absolute top-3 left-3 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md shadow">Featured</span>' : ''}
-            <span class="absolute bottom-3 right-3 bg-white/90 backdrop-blur text-slate-800 text-[11px] font-bold px-2 py-0.5 rounded shadow">
-              ⭐ ${p.rating} (${p.reviewCount})
-            </span>
-          </div>
-
-          <!-- Product Info -->
-          <div class="p-4 flex-1 flex flex-col justify-between">
-            <div>
-              <p class="text-[11px] font-semibold text-blue-600 uppercase tracking-wider">${escapeHtml(p.categoryName || 'General')}</p>
-              <h3 class="font-bold text-slate-900 text-sm mt-1 line-clamp-1 hover:text-blue-600 cursor-pointer" onclick="window.openProductModal('${p.id}')">
-                ${escapeHtml(p.name)}
-              </h3>
-              <p class="text-xs text-slate-500 mt-1 line-clamp-2">${escapeHtml(p.description)}</p>
-            </div>
-
-            <div class="pt-4 border-t border-slate-100 mt-3 flex items-center justify-between">
-              <div>
-                <p class="text-xs text-slate-400">Price</p>
-                <p class="text-base font-extrabold text-slate-900">${formatINR(p.price)}</p>
+        <div class="product-card bg-white p-4 flex flex-col justify-between hover:shadow-lg transition">
+          <div>
+            <!-- Top Badges & Thumbnail -->
+            <div class="relative bg-[#f7f8f8] rounded-xl aspect-square overflow-hidden cursor-pointer flex items-center justify-center p-3" onclick="window.openProductModal('${p.id}')">
+              <img src="${p.image}" alt="${escapeHtml(p.name)}" class="w-full h-full object-contain hover:scale-105 transition duration-300">
+              
+              <!-- Amazon Deal Badges -->
+              <div class="absolute top-2.5 left-2.5 flex flex-col gap-1 items-start">
+                ${p.featured ? `
+                  <span class="badge-deal">Limited time deal</span>
+                ` : p.rating >= 4.7 ? `
+                  <span class="badge-choice">Omni's <span class="accent">Choice</span></span>
+                ` : `
+                  <span class="bg-[#232f3e] text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-xs">Top Rated</span>
+                `}
               </div>
 
-              <!-- Stock & Add to Cart -->
-              <div class="flex items-center gap-1.5">
+              <!-- Quick Rating Badge -->
+              <span class="absolute bottom-2.5 right-2.5 bg-white/95 backdrop-blur text-slate-800 text-[11px] font-bold px-2 py-0.5 rounded-full shadow-xs flex items-center gap-1 border border-slate-100">
+                <span class="text-[#ffa41c]">★</span> ${p.rating}
+              </span>
+            </div>
+
+            <!-- Product Category & Title -->
+            <div class="mt-3">
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="font-bold text-[#007185] hover:text-[#c7511f] uppercase tracking-wider">${escapeHtml(p.categoryName || 'General')}</span>
+                <span class="badge-prime"><span class="check">✓</span>prime</span>
+              </div>
+              <h3 class="font-bold text-sm text-[#0f1111] mt-1 line-clamp-2 hover:text-[#c7511f] cursor-pointer leading-snug" onclick="window.openProductModal('${p.id}')">
+                ${escapeHtml(p.name)}
+              </h3>
+              
+              <!-- Stars Display -->
+              <div class="flex items-center gap-1.5 mt-1 text-xs">
+                <div class="flex text-[#ffa41c] text-xs">
+                  ${'★'.repeat(Math.floor(p.rating))}${'☆'.repeat(5 - Math.floor(p.rating))}
+                </div>
+                <span class="text-[#007185] font-semibold text-[11px] hover:underline cursor-pointer">(${p.reviewCount.toLocaleString('en-IN')})</span>
+              </div>
+            </div>
+
+            <!-- Pricing & Amazon Savings -->
+            <div class="mt-3 pt-2 border-t border-slate-100">
+              <div class="flex items-baseline gap-2">
+                <span class="text-xs font-black text-[#cc0c39] bg-red-50 px-1.5 py-0.5 rounded">-${discountPercent}%</span>
+                <span class="text-xl font-extrabold text-[#0f1111]">${formatINR(p.price)}</span>
+              </div>
+              <div class="text-[11px] text-slate-500 mt-0.5">
+                M.R.P.: <span class="line-through">${formatINR(mrp)}</span>
+              </div>
+              
+              <!-- Delivery info -->
+              <div class="text-[11px] text-[#007600] font-semibold mt-1 flex items-center gap-1">
+                <span>FREE Delivery by <strong>Tomorrow, 11 AM</strong></span>
+              </div>
+
+              <!-- Coupon Tag -->
+              <div class="mt-2">
+                <span class="coupon-tag">
+                  <span>🏷️</span> Save 10% with coupon <strong>WELCOME10</strong>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Add to Cart Button -->
+          <div class="mt-4 pt-2">
+            ${isOutOfStock ? `
+              <div class="w-full text-center py-2 bg-red-50 text-red-600 font-bold text-xs rounded-full border border-red-200">
+                Currently Unavailable
+              </div>
+            ` : `
+              <div class="flex items-center gap-2">
+                <button onclick="window.addToCart('${p.id}')" class="flex-1 btn-amazon-cart text-xs py-2 font-bold shadow-xs">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                  Add to Cart
+                </button>
                 ${state.user && state.user.role === 'admin' ? `
-                  <button onclick="event.stopPropagation(); window.adminDeleteProduct('${p.id}', '${escapeHtml(p.name)}')" class="p-2 rounded-xl bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 transition" title="Delete Item (Admin)">
+                  <button onclick="event.stopPropagation(); window.adminDeleteProduct('${p.id}', '${escapeHtml(p.name)}')" class="p-2 rounded-full bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 transition" title="Delete Item (Admin)">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                   </button>
                 ` : ''}
-                ${isOutOfStock 
-                  ? '<span class="text-xs text-red-500 font-semibold px-2 py-1 bg-red-50 rounded">Out of Stock</span>'
-                  : `<button onclick="window.addToCart('${p.id}')" class="p-2 rounded-xl bg-slate-900 hover:bg-blue-600 text-white shadow-sm transition" title="Add to Cart">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    </button>`
-                }
               </div>
-            </div>
+            `}
           </div>
         </div>
       `;
@@ -408,47 +467,80 @@
       const modal = document.getElementById('product-modal');
       const content = document.getElementById('product-modal-content');
 
+      const mrp = Math.round(p.price * 1.35);
+      const discountPercent = Math.round(((mrp - p.price) / mrp) * 100);
+
       content.innerHTML = `
         <div class="relative">
           <button onclick="window.closeModals()" class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-slate-600 flex items-center justify-center shadow">✕</button>
           
           <div class="grid grid-cols-1 md:grid-cols-2">
             <!-- Image Section -->
-            <div class="bg-slate-100 aspect-square md:aspect-auto">
-              <img src="${p.image}" alt="${escapeHtml(p.name)}" class="w-full h-full object-cover">
+            <div class="bg-[#f7f8f8] aspect-square flex items-center justify-center p-6">
+              <img src="${p.image}" alt="${escapeHtml(p.name)}" class="w-full h-full object-contain">
             </div>
 
             <!-- Details Section -->
             <div class="p-6 md:p-8 flex flex-col justify-between space-y-4">
               <div>
-                <span class="text-xs font-bold text-blue-600 uppercase">${escapeHtml(p.categoryName)}</span>
-                <h2 class="text-2xl font-bold text-slate-900 mt-1">${escapeHtml(p.name)}</h2>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold text-[#007185] hover:text-[#c7511f] uppercase">${escapeHtml(p.categoryName)}</span>
+                  <span class="badge-prime text-xs"><span class="check">✓</span>prime</span>
+                </div>
+                <h2 class="text-xl sm:text-2xl font-bold text-[#0f1111] mt-1">${escapeHtml(p.name)}</h2>
                 
                 <div class="flex items-center gap-2 mt-2">
-                  <div class="flex text-amber-400">
+                  <div class="flex text-[#ffa41c]">
                     ${'★'.repeat(Math.round(p.rating))}${'☆'.repeat(5 - Math.round(p.rating))}
                   </div>
-                  <span class="text-xs font-semibold text-slate-700">${p.rating} / 5</span>
-                  <span class="text-xs text-slate-400">(${p.reviewCount} customer reviews)</span>
+                  <span class="text-xs font-bold text-slate-800">${p.rating} / 5</span>
+                  <span class="text-xs text-[#007185] hover:underline cursor-pointer">(${p.reviewCount} verified ratings)</span>
                 </div>
 
-                <div class="text-2xl font-black text-slate-900 mt-4">${formatINR(p.price)}</div>
-                <p class="text-xs text-slate-600 leading-relaxed mt-2">${escapeHtml(p.description)}</p>
+                <!-- Price Breakdown -->
+                <div class="mt-4 pb-3 border-b border-slate-200">
+                  <div class="flex items-baseline gap-2">
+                    <span class="text-sm font-black text-[#cc0c39] bg-red-50 px-2 py-0.5 rounded">-${discountPercent}%</span>
+                    <span class="text-3xl font-extrabold text-[#0f1111]">${formatINR(p.price)}</span>
+                  </div>
+                  <div class="text-xs text-slate-500 mt-1">
+                    M.R.P.: <span class="line-through">${formatINR(mrp)}</span> <span class="text-slate-400">(Inclusive of all taxes & GST)</span>
+                  </div>
+                  <div class="mt-2 text-xs text-[#007600] font-bold">
+                    ✓ FREE Delivery by Tomorrow, 11 AM
+                  </div>
+                </div>
+
+                <p class="text-xs text-slate-600 leading-relaxed mt-3">${escapeHtml(p.description)}</p>
+
+                <!-- Coupon Promo Callout -->
+                <div class="mt-3 p-3 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-300 rounded-xl flex items-center justify-between text-xs shadow-xs">
+                  <div class="flex items-center gap-2">
+                    <span class="text-lg">🎟️</span>
+                    <div>
+                      <div class="font-bold text-emerald-950">Festive Coupon Available!</div>
+                      <div class="text-[11px] text-emerald-700">Apply coupon <strong>FESTIVE20</strong> for instant 20% discount</div>
+                    </div>
+                  </div>
+                  <button type="button" onclick="window.addToCart('${p.id}'); window.applyCoupon('FESTIVE20'); window.closeModals(); window.startCheckout();" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs shadow-xs">
+                    Apply & Buy
+                  </button>
+                </div>
 
                 <!-- Stock Indicator -->
-                <div class="mt-4 flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full ${p.stock > 0 ? 'bg-emerald-500' : 'bg-red-500'}"></span>
-                  <span class="text-xs font-medium text-slate-600">
-                    ${p.stock > 0 ? `Available in stock: <strong>${p.stock} units</strong>` : 'Currently Sold Out'}
+                <div class="mt-3 flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full ${p.stock > 0 ? 'bg-[#007600]' : 'bg-red-500'}"></span>
+                  <span class="text-xs font-semibold ${p.stock > 0 ? 'text-[#007600]' : 'text-red-600'}">
+                    ${p.stock > 0 ? `In Stock (${p.stock} units available)` : 'Currently Sold Out'}
                   </span>
                 </div>
 
                 <!-- Specs -->
                 ${p.specs && p.specs.length ? `
-                  <div class="mt-4 pt-4 border-t border-slate-100">
+                  <div class="mt-3 pt-3 border-t border-slate-100">
                     <p class="text-xs font-bold text-slate-700 uppercase">Specifications</p>
                     <div class="flex flex-wrap gap-1.5 mt-2">
-                      ${p.specs.map(s => `<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[11px] font-medium">${escapeHtml(s)}</span>`).join('')}
+                      ${p.specs.map(s => `<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[11px] font-medium">${escapeHtml(s)}</span>`).join('')}
                     </div>
                   </div>
                 ` : ''}
@@ -457,9 +549,12 @@
               <!-- Action button -->
               <div class="pt-4 border-t border-slate-200">
                 ${p.stock > 0 ? `
-                  <div class="flex items-center gap-3">
-                    <button onclick="window.addToCart('${p.id}'); window.closeModals(); window.toggleCart();" class="flex-1 btn-primary text-sm py-3 font-bold shadow-md">
-                      Add to Shopping Cart &rarr;
+                  <div class="flex flex-col sm:flex-row gap-2.5">
+                    <button onclick="window.addToCart('${p.id}'); window.closeModals(); window.toggleCart();" class="flex-1 btn-amazon-cart text-xs sm:text-sm py-2.5 font-bold shadow-md">
+                      Add to Shopping Cart
+                    </button>
+                    <button onclick="window.addToCart('${p.id}'); window.closeModals(); window.startCheckout();" class="flex-1 btn-amazon-buy text-xs sm:text-sm py-2.5 font-bold shadow-md">
+                      Buy Now &rarr;
                     </button>
                   </div>
                 ` : `
@@ -674,21 +769,32 @@
       return;
     }
 
-    if (checkoutBtn) checkoutBtn.disabled = false;
+    if (checkoutBtn) {
+      checkoutBtn.disabled = false;
+      checkoutBtn.className = 'w-full btn-amazon-cart text-sm py-3 font-black shadow-md';
+      checkoutBtn.innerHTML = `Proceed to Buy (${totalQty} ${totalQty === 1 ? 'item' : 'items'}) &rarr;`;
+    }
 
-    container.innerHTML = state.cart.map(item => `
-      <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200">
+    const freeShipQualified = subtotal >= 999;
+    const shippingProgressHtml = `
+      <div class="mb-3 p-2.5 rounded-lg text-xs font-bold ${freeShipQualified ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-amber-50 text-amber-800 border border-amber-200'} flex items-center gap-2">
+        <span>${freeShipQualified ? '✓ Qualified for FREE Express Delivery' : 'Add ' + formatINR(999 - subtotal) + ' more to get FREE Delivery!'}</span>
+      </div>
+    `;
+
+    container.innerHTML = shippingProgressHtml + state.cart.map(item => `
+      <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-2xs">
         <img src="${item.image}" alt="${escapeHtml(item.name)}" class="w-14 h-14 object-cover rounded-lg bg-slate-100">
         <div class="flex-1 min-w-0">
           <h4 class="text-xs font-bold text-slate-900 truncate">${escapeHtml(item.name)}</h4>
-          <p class="text-xs text-blue-600 font-extrabold mt-0.5">${formatINR(item.price)}</p>
+          <p class="text-xs text-[#0f1111] font-extrabold mt-0.5">${formatINR(item.price)}</p>
           <div class="flex items-center gap-2 mt-2">
-            <button onclick="window.updateCartQty('${item.productId}', -1)" class="w-5 h-5 rounded bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-xs font-bold">-</button>
+            <button onclick="window.updateCartQty('${item.productId}', -1)" class="w-6 h-6 rounded bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-xs font-bold">-</button>
             <span class="text-xs font-bold px-1">${item.quantity}</span>
-            <button onclick="window.updateCartQty('${item.productId}', 1)" class="w-5 h-5 rounded bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-xs font-bold">+</button>
+            <button onclick="window.updateCartQty('${item.productId}', 1)" class="w-6 h-6 rounded bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-xs font-bold">+</button>
           </div>
         </div>
-        <button onclick="window.removeFromCart('${item.productId}')" class="p-1.5 text-slate-400 hover:text-red-500 rounded">
+        <button onclick="window.removeFromCart('${item.productId}')" class="p-1.5 text-slate-400 hover:text-red-500 rounded" title="Remove Item">
           ✕
         </button>
       </div>
@@ -897,8 +1003,8 @@
           </div>
 
           <!-- Gateway Spinner and Submit -->
-          <button type="submit" id="pay-submit-btn" class="w-full btn-primary text-sm py-3 font-bold shadow-md">
-            Authorize & Pay ${formatINR(totals.total)} &rarr;
+          <button type="submit" id="pay-submit-btn" class="w-full btn-amazon-buy text-sm py-3.5 font-black shadow-md rounded-full">
+            Place Order & Pay ${formatINR(totals.total)} &rarr;
           </button>
         </form>
       </div>

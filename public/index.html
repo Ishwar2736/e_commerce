@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OmniStore - Full-Stack E-Commerce Platform</title>
+  <title>OmniStore.in: Great Indian Festival Deals, Electronics, Audio, Wearables & More</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/css/style.css">
   <script>
@@ -12,13 +12,17 @@
       theme: {
         extend: {
           colors: {
-            brand: {
-              50: '#eff6ff',
-              100: '#dbeafe',
-              500: '#3b82f6',
-              600: '#2563eb',
-              700: '#1d4ed8',
-              800: '#1e40af'
+            amazon: {
+              nav: '#131921',
+              subnav: '#232f3e',
+              hover: '#37475a',
+              yellow: '#ffd814',
+              orange: '#ffa41c',
+              gold: '#febd69',
+              deal: '#cc0c39',
+              prime: '#00a8e1',
+              green: '#007600',
+              dark: '#0f1111'
             }
           }
         }
@@ -26,96 +30,161 @@
     }
   </script>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+<body class="bg-[#eaeded] text-[#0f1111] min-h-screen flex flex-col font-sans">
 
-  <!-- Top Global Bar -->
-  <div class="bg-slate-900 text-slate-300 text-xs py-2 px-4 border-b border-slate-800">
+  <!-- Top Global Announcement Bar (Amazon Festive Gold / Dark Bar) -->
+  <div class="bg-[#131921] text-slate-300 text-xs py-1.5 px-4 border-b border-slate-800">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
       <div class="flex items-center gap-3">
-        <span class="inline-flex items-center px-2 py-0.5 rounded bg-blue-900/60 text-blue-300 border border-blue-700/50 font-medium">UML Architecture Demo</span>
-        <span>Customer Storefront &bull; Admin Verification Portal &bull; Payment Gateway &bull; Delivery Service</span>
+        <span class="inline-flex items-center px-2 py-0.5 rounded bg-[#febd69] text-slate-900 font-extrabold text-[11px] tracking-wide">
+          GREAT INDIAN FESTIVAL
+        </span>
+        <span class="text-slate-300 font-medium hidden sm:inline">
+          Extra 20% OFF with code <strong class="text-[#febd69] font-mono">FESTIVE20</strong> &bull; Free Express Delivery on ₹999+
+        </span>
       </div>
-      <div class="flex items-center gap-4">
-        <!-- Quick Sign In Links -->
-        <span class="text-slate-400">Sign In:</span>
-        <button onclick="window.openAuthModal('login', 'admin@store.com')" class="hover:text-purple-300 text-purple-400 underline font-semibold">Admin Login</button>
+      <div class="flex items-center gap-4 text-[11px]">
+        <div class="flex items-center gap-1 text-slate-300">
+          <svg class="w-3.5 h-3.5 text-[#ff9900]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+          <span>Deliver to <strong class="text-white font-bold">India 560038</strong></span>
+        </div>
         <span class="text-slate-600">|</span>
-        <button onclick="window.openAuthModal('login', 'john@example.com')" class="hover:text-white underline">Customer Login</button>
+        <!-- Quick Login Shortcuts -->
+        <button onclick="window.openAuthModal('login', 'admin@store.com')" class="text-[#febd69] hover:underline font-semibold">Admin (admin@store.com)</button>
+        <span class="text-slate-600">|</span>
+        <button onclick="window.openAuthModal('login', 'john@example.com')" class="text-slate-300 hover:text-white hover:underline">Customer (john@example.com)</button>
       </div>
     </div>
   </div>
 
-  <!-- Header Navigation -->
-  <header class="header-nav">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+  <!-- Main Amazon Header Navigation -->
+  <header class="amazon-header sticky top-0 z-40 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3 md:gap-6">
       
-      <!-- Brand Logo -->
-      <a href="#" onclick="window.switchTab('store'); return false;" class="flex items-center gap-2 text-xl font-bold text-slate-900 tracking-tight">
-        <div class="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-md font-black">
-          OS
+      <!-- Brand Logo (Amazon Style with curved orange smile accent) -->
+      <a href="#" onclick="window.switchTab('store'); return false;" class="flex items-center gap-1.5 flex-shrink-0 group">
+        <div class="flex flex-col">
+          <span class="text-2xl font-black tracking-tight text-white flex items-center">
+            omni<span class="text-[#ff9900]">store</span><span class="text-xs text-[#febd69] font-normal ml-0.5">.in</span>
+          </span>
+          <div class="h-1 w-full bg-gradient-to-r from-transparent via-[#ff9900] to-transparent rounded-full -mt-0.5 group-hover:scale-105 transition"></div>
         </div>
-        <span>Omni<span class="text-blue-600">Store</span></span>
       </a>
 
-      <!-- Search Input (Search Products Use Case) -->
-      <div class="flex-1 max-w-lg hidden md:block">
-        <div class="relative">
-          <input 
-            type="text" 
-            id="global-search" 
-            placeholder="Search products by title, category, or specifications..." 
-            class="w-full pl-10 pr-4 py-2 text-sm bg-slate-100 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
-            oninput="window.handleSearch(this.value)"
-          >
-          <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
+      <!-- Location Widget (Desktop) -->
+      <div class="hidden lg:flex items-center gap-1.5 text-xs text-slate-300 hover:outline hover:outline-1 hover:outline-white p-1.5 rounded cursor-pointer">
+        <svg class="w-4 h-4 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        <div class="leading-tight">
+          <div class="text-[10px] text-slate-400">Delivering to Bengaluru 560038</div>
+          <div class="font-bold text-white">Update location</div>
         </div>
       </div>
 
-      <!-- Action Items & Role Toggle -->
-      <div class="flex items-center gap-3">
-        <!-- View Toggle (Store vs Admin) -->
-        <button id="nav-store-btn" onclick="window.switchTab('store')" class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-blue-50 text-blue-600 border border-blue-200">
+      <!-- Amazon Signature Search Bar -->
+      <div class="flex-1 max-w-2xl hidden md:block">
+        <div class="amazon-search-container bg-white">
+          <select id="search-category-filter" onchange="window.filterCategory(this.value)" class="bg-slate-100 text-xs px-3 py-2.5 text-slate-700 font-semibold border-r border-slate-300 focus:outline-none cursor-pointer hover:bg-slate-200">
+            <option value="all">All</option>
+            <option value="electronics">Electronics</option>
+            <option value="audio">Audio</option>
+            <option value="wearables">Wearables</option>
+            <option value="home">Home & Kitchen</option>
+            <option value="accessories">Accessories</option>
+          </select>
+          <input 
+            type="text" 
+            id="global-search" 
+            placeholder="Search OmniStore.in (e.g. Headphones, Watch, Fast Charger)..." 
+            class="flex-1 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
+            oninput="window.handleSearch(this.value)"
+          >
+          <button type="button" onclick="window.handleSearch(document.getElementById('global-search').value)" class="amazon-search-btn px-5 py-2.5 flex items-center justify-center font-bold" title="Search">
+            <svg class="w-5 h-5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Items & Navigation -->
+      <div class="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+        
+        <!-- Storefront / Admin Panel switcher -->
+        <button id="nav-store-btn" onclick="window.switchTab('store')" class="text-xs font-bold text-white hover:text-[#febd69] px-2 py-1.5 rounded hover:outline hover:outline-1 hover:outline-white">
           Storefront
         </button>
-        <button id="nav-admin-btn" onclick="window.switchTab('admin')" class="hidden px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 relative">
-          Admin Panel
-          <span id="pending-badge" class="hidden ml-1 px-1.5 py-0.2 rounded-full text-xs bg-amber-500 text-white font-bold">0</span>
+        <button id="nav-admin-btn" onclick="window.switchTab('admin')" class="hidden text-xs font-bold bg-[#febd69] text-slate-900 px-2.5 py-1.5 rounded shadow-sm hover:bg-[#f3a847] flex items-center gap-1">
+          <span>Admin Portal</span>
+          <span id="pending-badge" class="hidden px-1.5 py-0.2 rounded-full text-[10px] bg-red-600 text-white font-extrabold">0</span>
         </button>
 
-        <!-- Simulated Mailbox (Inspect sent emails) -->
-        <button onclick="window.openMailbox()" class="p-2 rounded-lg text-slate-600 hover:text-blue-600 hover:bg-blue-50 relative border border-slate-200" title="Inspect Dispatched Emails">
+        <!-- Simulated Mailbox Inspector -->
+        <button onclick="window.openMailbox()" class="p-1.5 text-slate-200 hover:text-white hover:outline hover:outline-1 hover:outline-white rounded relative" title="Transactional Mailbox (Receipts & Verifications)">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
           </svg>
-          <span id="mail-count-badge" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center font-bold">0</span>
-        </button>
-
-        <!-- Cart Trigger (Add to Cart / Place Order Use Cases) -->
-        <button onclick="window.toggleCart()" class="p-2 rounded-lg text-slate-700 hover:text-blue-600 hover:bg-blue-50 relative border border-slate-200" title="View Shopping Cart">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-          </svg>
-          <span id="cart-count-badge" class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center font-bold">0</span>
+          <span id="mail-count-badge" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#f08804] text-white text-[10px] flex items-center justify-center font-bold">0</span>
         </button>
 
         <!-- User Authentication & Account Profile -->
-        <div id="auth-actions" class="flex items-center gap-2">
+        <div id="auth-actions" class="flex items-center gap-1.5">
           <!-- Injected via JavaScript -->
         </div>
+
+        <!-- Cart Button (Amazon Cart Look) -->
+        <button onclick="window.toggleCart()" class="flex items-center gap-1 text-white hover:outline hover:outline-1 hover:outline-white p-1.5 rounded relative" title="View Shopping Cart">
+          <div class="relative">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+            <span id="cart-count-badge" class="absolute -top-1 left-3.5 min-w-[18px] h-[18px] px-1 rounded-full bg-[#f08804] text-slate-900 text-[11px] font-black flex items-center justify-center">0</span>
+          </div>
+          <span class="text-xs font-bold text-white hidden sm:inline self-end mb-1">Cart</span>
+        </button>
 
       </div>
     </div>
 
     <!-- Mobile Search -->
-    <div class="px-4 pb-3 md:hidden">
-      <input 
-        type="text" 
-        placeholder="Search products..." 
-        class="w-full px-4 py-2 text-sm bg-slate-100 border border-slate-200 rounded-lg focus:outline-none focus:bg-white"
-        oninput="window.handleSearch(this.value)"
-      >
+    <div class="px-3 pb-2.5 md:hidden">
+      <div class="amazon-search-container bg-white">
+        <input 
+          type="text" 
+          placeholder="Search OmniStore.in..." 
+          class="flex-1 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
+          oninput="window.handleSearch(this.value)"
+        >
+        <button type="button" class="amazon-search-btn px-4 py-2" title="Search">
+          <svg class="w-4 h-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Secondary Amazon Sub-Navigation Bar -->
+    <div class="amazon-subnav px-4 py-1.5 text-xs text-white flex items-center gap-1 overflow-x-auto scrollbar-none border-t border-slate-700/60">
+      <button onclick="window.filterCategory('all')" class="font-bold flex items-center gap-1 text-white hover:border-white">
+        <span>☰ All</span>
+      </button>
+      <span class="text-slate-600">|</span>
+      <button onclick="window.filterCategory('all')" class="text-[#febd69] font-extrabold flex items-center gap-1 hover:border-white">
+        <span>🔥 Great Indian Festival</span>
+      </button>
+      <button onclick="window.filterCategory('electronics')" class="hover:text-[#febd69]">Electronics</button>
+      <button onclick="window.filterCategory('audio')" class="hover:text-[#febd69]">Audio & Sound</button>
+      <button onclick="window.filterCategory('wearables')" class="hover:text-[#febd69]">Wearables & Watches</button>
+      <button onclick="window.filterCategory('home')" class="hover:text-[#febd69]">Home & Lifestyle</button>
+      <button onclick="window.filterCategory('accessories')" class="hover:text-[#febd69]">Accessories</button>
+      <button onclick="window.startCheckout()" class="text-emerald-400 font-bold flex items-center gap-1">
+        <span>🎟️ Coupons & Deals</span>
+      </button>
+      <button onclick="window.openTrackOrderModal()" class="text-sky-300 font-semibold flex items-center gap-1">
+        <span>📦 Track Order</span>
+      </button>
+      <div class="ml-auto hidden md:flex items-center gap-1 text-[11px] text-[#febd69] font-bold">
+        <span>👑 Prime: FREE 1-Day Delivery</span>
+      </div>
     </div>
   </header>
 
@@ -137,33 +206,82 @@
     <!-- ========================================== -->
     <!-- 1. CUSTOMER STOREFRONT VIEW               -->
     <!-- ========================================== -->
-    <section id="view-store" class="space-y-8">
+    <section id="view-store" class="space-y-6">
       
-      <!-- Hero Promotional Banner -->
-      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 text-white p-8 md:p-12 shadow-lg">
-        <div class="relative z-10 max-w-2xl space-y-4">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-300 border border-blue-400/30">
-            <span>Verified Marketplace Standard</span>
+      <!-- Amazon Great Indian Festival Hero Banner -->
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#141b24] via-[#1f2c3f] to-[#b12704] text-white p-6 sm:p-10 shadow-xl border border-amber-500/20">
+        <!-- Festive Background Accents -->
+        <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-10 -top-10 w-64 h-64 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-3xl space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 uppercase tracking-wider shadow">
+            <span>✨ GREAT INDIAN FESTIVAL IS LIVE</span>
           </div>
-          <h1 class="text-3xl md:text-5xl font-black tracking-tight leading-tight">
-            Premium Hardware, Gear & Essentials.
+
+          <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight text-white drop-shadow">
+            Big Savings. Top Brands.<br>
+            <span class="text-[#febd69]">Up to 50% Off</span> + Instant Coupons.
           </h1>
-          <p class="text-slate-300 text-sm md:text-base leading-relaxed">
-            Every product is handpicked, every seller and customer account is manually verified for high trust. Track orders in real-time from placement to doorstep.
+
+          <p class="text-slate-200 text-xs sm:text-sm leading-relaxed max-w-xl">
+            Explore 20 curated electronics, audio, wearables, and home lifestyle products in Indian Rupees. Enjoy zero delivery fee on orders above ₹999 and lightning-fast doorstep dispatch.
           </p>
+
+          <!-- Interactive Coupon Pills inside banner -->
+          <div class="pt-1 flex flex-wrap items-center gap-2 text-xs">
+            <span class="text-amber-200 font-bold">Apply coupons at checkout:</span>
+            <span class="px-2.5 py-1 rounded bg-[#232f3e] border border-amber-400/50 text-[#febd69] font-mono font-bold">FESTIVE20 (20% OFF)</span>
+            <span class="px-2.5 py-1 rounded bg-[#232f3e] border border-amber-400/50 text-[#febd69] font-mono font-bold">FLAT500 (₹500 OFF)</span>
+            <span class="px-2.5 py-1 rounded bg-[#232f3e] border border-amber-400/50 text-[#febd69] font-mono font-bold">FREESHIP (Free Delivery)</span>
+          </div>
+
           <div class="flex flex-wrap gap-3 pt-2">
-            <button onclick="window.filterCategory('all')" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2.5 rounded-xl font-semibold text-sm shadow transition">
-              Explore Catalog
+            <button onclick="window.filterCategory('all')" class="btn-amazon-cart text-sm py-2.5 px-6 font-black shadow-lg">
+              Shop Festive Deals Now &rarr;
             </button>
-            <button onclick="window.openTrackOrderModal()" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-5 py-2.5 rounded-xl font-semibold text-sm transition">
-              Track an Order &rarr;
+            <button onclick="window.openTrackOrderModal()" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-5 py-2.5 rounded-full font-bold text-xs transition">
+              Track Your Shipment &rarr;
             </button>
           </div>
         </div>
       </div>
 
+      <!-- Amazon 4-Card Deal Feature Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div onclick="window.filterCategory('electronics')" class="deal-feature-card hover:border-[#ff9900]">
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-[#b12704] bg-red-50 px-2 py-0.5 rounded">Mega Deal</span>
+          <h3 class="text-base font-bold text-slate-900 mt-2">Up to 40% Off | Electronics</h3>
+          <p class="text-xs text-slate-500 mt-1">4K monitors, mechanical keyboards, chargers & more.</p>
+          <span class="inline-block mt-3 text-xs font-bold text-[#007185] hover:text-[#c7511f]">See all deals &rarr;</span>
+        </div>
+
+        <div onclick="window.filterCategory('audio')" class="deal-feature-card hover:border-[#ff9900]">
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-purple-700 bg-purple-50 px-2 py-0.5 rounded">Trending Audio</span>
+          <h3 class="text-base font-bold text-slate-900 mt-2">Starting ₹1,299 | Headphones</h3>
+          <p class="text-xs text-slate-500 mt-1">Active noise cancellation, studio mics & soundbars.</p>
+          <span class="inline-block mt-3 text-xs font-bold text-[#007185] hover:text-[#c7511f]">Explore audio &rarr;</span>
+        </div>
+
+        <div onclick="window.filterCategory('wearables')" class="deal-feature-card hover:border-[#ff9900]">
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">Best Sellers</span>
+          <h3 class="text-base font-bold text-slate-900 mt-2">Min. 30% Off | Wearables</h3>
+          <p class="text-xs text-slate-500 mt-1">Smartwatches, AMOLED displays & fitness trackers.</p>
+          <span class="inline-block mt-3 text-xs font-bold text-[#007185] hover:text-[#c7511f]">Browse smartwatches &rarr;</span>
+        </div>
+
+        <div onclick="window.startCheckout()" class="deal-feature-card hover:border-[#ff9900]">
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-700 bg-amber-50 px-2 py-0.5 rounded">Coupons Central</span>
+          <h3 class="text-base font-bold text-slate-900 mt-2">Save Extra ₹500 Today</h3>
+          <p class="text-xs text-slate-500 mt-1">Instant discount coupons applied before payment.</p>
+          <span class="inline-block mt-3 text-xs font-bold text-[#007185] hover:text-[#c7511f]">View coupon codes &rarr;</span>
+        </div>
+
+      </div>
+
       <!-- Categories & Filter Toolbar (Browse Products Use Case) -->
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-300">
         <!-- Category Pills -->
         <div id="category-pills" class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-none">
           <!-- Injected via JavaScript -->
@@ -171,9 +289,9 @@
 
         <!-- Sort Control -->
         <div class="flex items-center gap-2 self-end md:self-auto">
-          <span class="text-xs text-slate-500 font-medium">Sort by:</span>
-          <select id="sort-select" onchange="window.handleSort(this.value)" class="text-xs bg-white border border-slate-200 rounded-lg px-3 py-2 font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500">
-            <option value="featured">Featured First</option>
+          <span class="text-xs text-slate-600 font-semibold">Sort by:</span>
+          <select id="sort-select" onchange="window.handleSort(this.value)" class="text-xs bg-white border border-slate-300 rounded-lg px-3 py-2 font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#ff9900]">
+            <option value="featured">Featured Deals</option>
             <option value="price_asc">Price: Low to High</option>
             <option value="price_desc">Price: High to Low</option>
             <option value="rating">Highest Customer Rating</option>
@@ -182,7 +300,7 @@
       </div>
 
       <!-- Product Catalog Grid -->
-      <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <!-- Injected via JavaScript -->
       </div>
 
@@ -544,18 +662,64 @@
   <!-- Toast Message Container -->
   <div id="toast-container"></div>
 
-  <!-- Footer -->
-  <footer class="bg-white border-t border-slate-200 mt-12 py-8 text-xs text-slate-500">
-    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div>
-        <p class="font-semibold text-slate-800">OmniStore E-Commerce Architecture</p>
-        <p class="mt-0.5">Complies fully with UML diagram: Customer, Admin, Payment Gateway, Delivery Service.</p>
+  <!-- Amazon Multi-Tier Footer -->
+  <footer class="mt-16 text-xs text-slate-300">
+    <!-- Back to Top Bar -->
+    <div onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="bg-[#37475a] hover:bg-[#485769] text-white py-3.5 text-center font-bold text-xs cursor-pointer transition select-none">
+      Back to top ↑
+    </div>
+
+    <!-- Main 4-Column Footer -->
+    <div class="bg-[#232f3e] py-10 px-4 border-b border-slate-700">
+      <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-xs">
+        <div class="space-y-2">
+          <h4 class="font-bold text-white text-sm">Get to Know Us</h4>
+          <ul class="space-y-1.5 text-slate-300">
+            <li><a href="#" class="hover:underline">About OmniStore.in</a></li>
+            <li><a href="#" class="hover:underline">Careers</a></li>
+            <li><a href="#" class="hover:underline">Press Releases</a></li>
+            <li><a href="#" class="hover:underline">OmniStore Science</a></li>
+          </ul>
+        </div>
+        <div class="space-y-2">
+          <h4 class="font-bold text-white text-sm">Connect with Us</h4>
+          <ul class="space-y-1.5 text-slate-300">
+            <li><a href="#" class="hover:underline">Facebook</a></li>
+            <li><a href="#" class="hover:underline">Twitter / X</a></li>
+            <li><a href="#" class="hover:underline">Instagram</a></li>
+          </ul>
+        </div>
+        <div class="space-y-2">
+          <h4 class="font-bold text-white text-sm">Make Money with Us</h4>
+          <ul class="space-y-1.5 text-slate-300">
+            <li><a href="#" class="hover:underline">Sell on OmniStore</a></li>
+            <li><a href="#" class="hover:underline">Fulfillment by OmniStore</a></li>
+            <li><a href="#" class="hover:underline">Advertise Your Products</a></li>
+            <li><a href="#" class="hover:underline">OmniStore Pay on Merchants</a></li>
+          </ul>
+        </div>
+        <div class="space-y-2">
+          <h4 class="font-bold text-white text-sm">Let Us Help You</h4>
+          <ul class="space-y-1.5 text-slate-300">
+            <li><a href="#" onclick="window.openTrackOrderModal(); return false;" class="hover:underline">Your Orders & Tracking</a></li>
+            <li><a href="#" onclick="window.openMailbox(); return false;" class="hover:underline">Dispatched Receipt Logs</a></li>
+            <li><a href="#" class="hover:underline">100% Purchase Protection</a></li>
+            <li><a href="#" class="hover:underline">Help & Customer Support</a></li>
+          </ul>
+        </div>
       </div>
-      <div class="flex items-center gap-4">
-        <span>Admin Verification System Active</span>
-        <span>&bull;</span>
-        <button onclick="window.openMailbox()" class="text-blue-600 hover:underline">View Mailbox Logs</button>
+    </div>
+
+    <!-- Bottom Copyright & Region Bar -->
+    <div class="bg-[#131921] py-8 px-4 text-center text-slate-400 space-y-3">
+      <div class="flex items-center justify-center gap-6 text-xs">
+        <span class="font-bold text-white text-base">omni<span class="text-[#ff9900]">store</span>.in</span>
+        <span class="border border-slate-600 px-3 py-1 rounded text-slate-300">🌐 English</span>
+        <span class="border border-slate-600 px-3 py-1 rounded text-slate-300">🇮🇳 India</span>
       </div>
+      <p class="text-[11px] text-slate-500">
+        &copy; 2026 OmniStore.in, Inc. or its affiliates. Full-Stack E-Commerce Architecture (Customer, Admin, Payment Gateway, Delivery Service).
+      </p>
     </div>
   </footer>
 
