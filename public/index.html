@@ -91,11 +91,12 @@
           <input 
             type="text" 
             id="global-search" 
-            placeholder="Search OmniStore.in (e.g. Headphones, Watch, Fast Charger)..." 
+            placeholder="Search OmniStore.in (e.g. Headphones, Shoes, Smartwatch)..." 
             class="flex-1 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
             oninput="window.handleSearch(this.value)"
+            onkeydown="if(event.key === 'Enter') { event.preventDefault(); window.handleSearch(this.value, true); }"
           >
-          <button type="button" onclick="window.handleSearch(document.getElementById('global-search').value)" class="amazon-search-btn px-5 py-2.5 flex items-center justify-center font-bold" title="Search">
+          <button type="button" onclick="window.handleSearch(document.getElementById('global-search').value, true)" class="amazon-search-btn px-5 py-2.5 flex items-center justify-center font-bold" title="Search">
             <svg class="w-5 h-5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
@@ -148,11 +149,12 @@
         <input 
           type="text" 
           id="mobile-search"
-          placeholder="Search OmniStore.in..." 
+          placeholder="Search OmniStore.in (e.g. Headphones, Shoes)..." 
           class="flex-1 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
           oninput="window.handleSearch(this.value)"
+          onkeydown="if(event.key === 'Enter') { event.preventDefault(); window.handleSearch(this.value, true); }"
         >
-        <button type="button" onclick="window.handleSearch(document.getElementById('mobile-search').value)" class="amazon-search-btn px-4 py-2" title="Search">
+        <button type="button" onclick="window.handleSearch(document.getElementById('mobile-search').value, true)" class="amazon-search-btn px-4 py-2" title="Search">
           <svg class="w-4 h-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
           </svg>
@@ -203,7 +205,7 @@
     <section id="view-store" class="space-y-6">
       
       <!-- Amazon Multi-Card Promotional Hero Grid (Direct Match to Amazon.in) -->
-      <div class="relative">
+      <div id="promotional-hero-banner" class="relative">
         <!-- 5 Colorful Amazon Feature Cards (Horizontal swipe carousel on mobile, 5-column grid on desktop) -->
         <div class="flex overflow-x-auto sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5 pb-2 sm:pb-0 scrollbar-none snap-x snap-mandatory">
           
@@ -372,6 +374,9 @@
           </div>
         </div>
       </div>
+
+      <!-- Product Catalog Section Anchor (For smooth scroll directly to results) -->
+      <div id="product-catalog-anchor" class="scroll-mt-28"></div>
 
       <!-- Categories & Filter Toolbar (Browse Products Use Case) -->
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-300">

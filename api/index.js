@@ -427,8 +427,27 @@ export default async function handler(req, res) {
           });
         }
         if (search) {
-          const q = search.toLowerCase();
-          prods = prods.filter(p => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q));
+          const q = search.toLowerCase().trim();
+          prods = prods.filter(p => {
+            const pName = (p.name || '').toLowerCase();
+            const pDesc = (p.description || '').toLowerCase();
+            const pCat = (p.categoryName || '').toLowerCase();
+            const pSpecs = (p.specs || []).join(' ').toLowerCase();
+            const fullText = `${pName} ${pDesc} ${pCat} ${pSpecs}`;
+            
+            if (fullText.includes(q)) return true;
+
+            const terms = q.split(/\s+/).filter(Boolean);
+            return terms.every(term => {
+              if (fullText.includes(term)) return true;
+              // Singular / plural checks (e.g. headphone vs headphones, shoe vs shoes)
+              if (term.endsWith('s') && term.length > 3 && fullText.includes(term.slice(0, -1))) return true;
+              if (fullText.includes(term + 's')) return true;
+              if (term === 'headphone' && (fullText.includes('headphone') || fullText.includes('earbud') || fullText.includes('audio') || fullText.includes('headset'))) return true;
+              if (term === 'earphone' && (fullText.includes('earphone') || fullText.includes('earbud') || fullText.includes('headphone'))) return true;
+              return false;
+            });
+          });
         }
 
         const maxPrice = reqUrl.searchParams.get('maxPrice');

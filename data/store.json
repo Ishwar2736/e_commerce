@@ -170,6 +170,82 @@
       ]
     },
     {
+      "id": "prod_audio_2",
+      "name": "BassBeats Foldable Wireless On-Ear Headphones",
+      "categoryId": "cat_audio",
+      "categoryName": "Audio & Sound",
+      "price": 899,
+      "stock": 45,
+      "rating": 4.7,
+      "reviewCount": 64,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&q=80",
+      "description": "Deep bass wireless on-ear headphones with soft cushioned earcups, built-in mic, and 30-hour battery life.",
+      "specs": [
+        "Extra Bass Sound",
+        "30hr Playtime",
+        "Built-in HD Mic",
+        "Foldable Compact Design"
+      ]
+    },
+    {
+      "id": "prod_audio_3",
+      "name": "StudioPro Audiophile Over-Ear Studio Headphones",
+      "categoryId": "cat_audio",
+      "categoryName": "Audio & Sound",
+      "price": 1599,
+      "stock": 25,
+      "rating": 4.9,
+      "reviewCount": 38,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&q=80",
+      "description": "Studio-grade monitoring headphones with 50mm dynamic drivers, detachable braided cable, and noise isolation.",
+      "specs": [
+        "50mm Neodymium Drivers",
+        "Passive Noise Isolation",
+        "Detachable 3.5mm/6.3mm Cable",
+        "Memory Foam Cushions"
+      ]
+    },
+    {
+      "id": "prod_audio_4",
+      "name": "RogueX RGB Gaming Headphone with Boom Microphone",
+      "categoryId": "cat_audio",
+      "categoryName": "Audio & Sound",
+      "price": 1299,
+      "stock": 30,
+      "rating": 4.8,
+      "reviewCount": 51,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=800&q=80",
+      "description": "7.1 surround sound gaming headset with flexible noise-cancelling boom mic, breathable ear cushions, and dynamic RGB lighting.",
+      "specs": [
+        "7.1 Surround Sound",
+        "Noise-Cancelling Boom Mic",
+        "RGB Dynamic Lighting",
+        "Multi-Platform (PC/PS5/Xbox/Mobile)"
+      ]
+    },
+    {
+      "id": "prod_audio_5",
+      "name": "SonicFit Magnetic Sport Neckband Earphones",
+      "categoryId": "cat_audio",
+      "categoryName": "Audio & Sound",
+      "price": 499,
+      "stock": 60,
+      "rating": 4.6,
+      "reviewCount": 78,
+      "featured": false,
+      "image": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&q=80",
+      "description": "Lightweight wireless neckband with magnetic earbuds, IPX5 sweat resistance, and instant fast pairing.",
+      "specs": [
+        "Magnetic Earbuds",
+        "IPX5 Sweat & Water Resistant",
+        "20hr Fast Charge",
+        "Bluetooth 5.2"
+      ]
+    },
+    {
       "id": "prod_2",
       "name": "Horizon Pro Smartwatch Ultra",
       "categoryId": "cat_wearables",

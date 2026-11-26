@@ -445,6 +445,19 @@
     if (!grid) return;
 
     if (!state.products.length) {
+      if (state.searchQuery) {
+        grid.innerHTML = `
+          <div class="col-span-full py-16 px-4 text-center text-slate-500 bg-white rounded-2xl border border-slate-200 shadow-sm">
+            <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center text-2xl font-bold border border-amber-200">🔍</div>
+            <h3 class="text-lg font-bold text-slate-900">No results found for "${escapeHtml(state.searchQuery)}"</h3>
+            <p class="text-xs text-slate-500 mt-1 max-w-md mx-auto">We couldn't find any products matching your search query. Try checking your spelling or search for "headphones", "shoes", "smartwatch", or "t-shirt".</p>
+            <button onclick="window.clearSearch()" class="mt-4 px-5 py-2.5 rounded-lg bg-[#febd69] hover:bg-[#f3a847] text-slate-900 text-xs font-bold transition shadow-xs">
+              Clear Search &amp; Show All Deals
+            </button>
+          </div>
+        `;
+        return;
+      }
       grid.innerHTML = `
         <div class="col-span-full py-16 text-center text-slate-500 bg-white rounded-2xl border border-slate-200">
           <p class="text-base font-semibold">No products found matching your search criteria.</p>
@@ -454,7 +467,25 @@
       return;
     }
 
-    const bannerHtml = state.maxPrice ? `
+    let searchBannerHtml = '';
+    if (state.searchQuery) {
+      searchBannerHtml = `
+        <div class="col-span-full bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border border-amber-300 p-3.5 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs font-bold text-slate-900 shadow-2xs">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="px-2.5 py-0.5 rounded bg-[#f08804] text-slate-900 font-black text-[10px] uppercase tracking-wider">Search Results</span>
+            <span class="text-sm font-black text-slate-900">Showing matches for <span class="text-[#b12704] font-black underline decoration-amber-400">"${escapeHtml(state.searchQuery)}"</span></span>
+            <span class="text-slate-600 font-semibold">(${state.products.length} item${state.products.length === 1 ? '' : 's'} found)</span>
+          </div>
+          <button onclick="window.clearSearch()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-xs font-bold text-slate-800 transition shadow-2xs">
+            <span>✕ Clear Search</span>
+            <span class="text-slate-400 font-normal">|</span>
+            <span class="text-[#007185]">Show Banners</span>
+          </button>
+        </div>
+      `;
+    }
+
+    const specialOfferHtml = state.maxPrice ? `
       <div class="col-span-full bg-amber-50 border border-amber-300 p-3 rounded-xl flex items-center justify-between text-xs font-bold text-amber-950 shadow-2xs">
         <div class="flex items-center gap-2">
           <span class="px-2 py-0.5 rounded bg-amber-500 text-slate-950 font-black text-[11px] uppercase">Special Offer</span>
@@ -465,6 +496,8 @@
         </button>
       </div>
     ` : '';
+
+    const bannerHtml = searchBannerHtml || specialOfferHtml;
 
     grid.innerHTML = bannerHtml + state.products.map(p => {
       const isOutOfStock = p.stock <= 0;
@@ -2719,11 +2752,18 @@
     state.activeCategory = catId;
     state.maxPrice = null;
     state.offerLabel = null;
+    state.searchQuery = '';
+    const searchInput = document.getElementById('global-search');
+    if (searchInput) searchInput.value = '';
+    const mobileInput = document.getElementById('mobile-search');
+    if (mobileInput) mobileInput.value = '';
+    const promoHero = document.getElementById('promotional-hero-banner');
+    if (promoHero) promoHero.classList.remove('hidden');
     renderCategoryPills();
     loadProducts();
-    const catalogElem = document.getElementById('category-pills');
+    const catalogElem = document.getElementById('product-catalog-anchor') || document.getElementById('category-pills');
     if (catalogElem) {
-      catalogElem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      catalogElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -2736,21 +2776,54 @@
     if (searchInput) searchInput.value = '';
     const mobileInput = document.getElementById('mobile-search');
     if (mobileInput) mobileInput.value = '';
+    const promoHero = document.getElementById('promotional-hero-banner');
+    if (promoHero) promoHero.classList.remove('hidden');
     renderCategoryPills();
     loadProducts();
-    const catalogElem = document.getElementById('category-pills');
+    const catalogElem = document.getElementById('product-catalog-anchor') || document.getElementById('category-pills');
     if (catalogElem) {
-      catalogElem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      catalogElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
-  window.handleSearch = function (query) {
-    state.searchQuery = query;
+  window.handleSearch = function (query, forceScroll = false) {
+    const cleanQuery = (query || '').trim();
+    state.searchQuery = cleanQuery;
     const globalInput = document.getElementById('global-search');
     const mobileInput = document.getElementById('mobile-search');
     if (globalInput && globalInput.value !== query) globalInput.value = query;
     if (mobileInput && mobileInput.value !== query) mobileInput.value = query;
+
+    const promoHero = document.getElementById('promotional-hero-banner');
+    if (cleanQuery) {
+      if (promoHero) promoHero.classList.add('hidden');
+    } else {
+      if (promoHero) promoHero.classList.remove('hidden');
+    }
+
+    loadProducts().then(() => {
+      // Whenever searching, scroll directly to the catalog so the matching item pops right in view!
+      if (cleanQuery) {
+        const anchor = document.getElementById('product-catalog-anchor') || document.getElementById('category-pills') || document.getElementById('product-grid');
+        if (anchor) {
+          anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } else if (forceScroll) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+  };
+
+  window.clearSearch = function () {
+    state.searchQuery = '';
+    const globalInput = document.getElementById('global-search');
+    const mobileInput = document.getElementById('mobile-search');
+    if (globalInput) globalInput.value = '';
+    if (mobileInput) mobileInput.value = '';
+    const promoHero = document.getElementById('promotional-hero-banner');
+    if (promoHero) promoHero.classList.remove('hidden');
     loadProducts();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   window.handleSort = function (sort) {
