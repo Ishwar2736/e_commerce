@@ -25,7 +25,8 @@
     payments: [],
     emails: [],
     reports: null,
-    activeOrderTracking: null
+    activeOrderTracking: null,
+    userLocation: JSON.parse(localStorage.getItem('omnistore_user_location') || 'null')
   };
 
   // API Client Helper
@@ -181,9 +182,272 @@
     }, 3000);
   }
 
+  // ==========================================
+  // AUTOMATIC LOCATION SUBSYSTEM (UML Delivery Actor)
+  // ==========================================
+  async function initUserLocation() {
+    if (state.userLocation && state.userLocation.city) {
+      updateLocationUI();
+      return;
+    }
+
+    // Auto-detect location via backend edge headers or IP lookup
+    try {
+      const res = await api('/api/location/detect');
+      if (res && res.city) {
+        state.userLocation = {
+          city: res.city,
+          state: res.state || '',
+          pincode: res.pincode || '',
+          country: res.country || 'India'
+        };
+        localStorage.setItem('omnistore_user_location', JSON.stringify(state.userLocation));
+        updateLocationUI();
+      }
+    } catch (e) {
+      console.warn('Auto location detection fallback:', e);
+      state.userLocation = { city: 'Bengaluru', state: 'Karnataka', pincode: '560038', country: 'India' };
+      updateLocationUI();
+    }
+  }
+
+  function updateLocationUI() {
+    const loc = state.userLocation || { city: 'Bengaluru', pincode: '560038' };
+    const locStr = `${loc.city} ${loc.pincode}`.trim();
+
+    const topElem = document.getElementById('top-location-display');
+    if (topElem) {
+      topElem.innerHTML = `Deliver to <strong class="text-white font-bold">${escapeHtml(locStr)}</strong>`;
+    }
+
+    const headerTitle = document.getElementById('header-location-title');
+    if (headerTitle) {
+      headerTitle.textContent = `Delivering to ${locStr}`;
+    }
+
+    const mobileText = document.getElementById('mobile-location-text');
+    if (mobileText) {
+      mobileText.textContent = locStr;
+    }
+
+    // Pre-fill checkout form inputs if currently rendered
+    const shipCity = document.getElementById('ship-city');
+    if (shipCity && !shipCity.value) shipCity.value = loc.city;
+    const shipZip = document.getElementById('ship-zip');
+    if (shipZip && !shipZip.value) shipZip.value = loc.pincode;
+  }
+
+  window.openLocationModal = function () {
+    const modal = document.getElementById('location-modal');
+    const content = document.getElementById('location-modal-content');
+    if (!modal || !content) return;
+
+    const loc = state.userLocation || { city: 'Bengaluru', state: 'Karnataka', pincode: '560038' };
+
+    content.innerHTML = `
+      <div class="relative">
+        <button onclick="window.closeModals()" class="absolute top-0 right-0 text-slate-400 hover:text-slate-600 font-bold text-lg p-1">✕</button>
+
+        <div class="flex items-center gap-2.5 mb-4">
+          <div class="w-9 h-9 rounded-full bg-[#ff9900]/20 text-[#0f1111] flex items-center justify-center font-bold text-lg">
+            📍
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-900 text-lg">Choose Your Delivery Location</h3>
+            <p class="text-xs text-slate-500">Delivery speeds & availability update automatically</p>
+          </div>
+        </div>
+
+        <!-- Current Location Card -->
+        <div class="p-3.5 bg-amber-50 border border-amber-200 rounded-xl mb-4 flex items-center justify-between shadow-2xs">
+          <div class="flex items-center gap-2.5">
+            <span class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold shadow-xs">✓</span>
+            <div>
+              <div class="text-[10px] font-bold text-amber-800 uppercase tracking-wider">Current Delivery Destination</div>
+              <div class="text-sm font-black text-slate-900">${escapeHtml(loc.city)}${loc.state ? `, ${escapeHtml(loc.state)}` : ''} <span class="font-mono text-amber-900 font-bold">${escapeHtml(loc.pincode)}</span></div>
+            </div>
+          </div>
+          <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">Active</span>
+        </div>
+
+        <!-- 1. Auto-Detect GPS Button -->
+        <div class="mb-4">
+          <button type="button" onclick="window.detectGpsLocation()" id="gps-detect-btn" class="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-xs flex items-center justify-center gap-2 transition">
+            <svg class="w-4 h-4 text-[#ff9900]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
+            <span>Auto-Detect My Exact Location (GPS)</span>
+          </button>
+        </div>
+
+        <div class="relative flex py-2 items-center">
+          <div class="flex-grow border-t border-slate-200"></div>
+          <span class="flex-shrink mx-3 text-slate-400 text-[11px] uppercase font-bold tracking-wider">or enter an indian pincode</span>
+          <div class="flex-grow border-t border-slate-200"></div>
+        </div>
+
+        <!-- 2. PIN Code Input Form -->
+        <form onsubmit="window.applyPincodeLocation(event)" class="mt-2 flex gap-2">
+          <input 
+            type="text" 
+            id="modal-pincode-input" 
+            maxlength="6" 
+            pattern="[0-9]{6}" 
+            placeholder="Enter 6-digit PIN code (e.g. 400001)" 
+            class="flex-1 px-3 py-2 text-xs border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff9900] font-mono font-bold"
+            required
+          >
+          <button type="submit" id="pin-apply-btn" class="px-4 py-2 bg-[#febd69] hover:bg-[#f3a847] text-slate-900 font-bold text-xs rounded-lg transition shadow-2xs">
+            Apply
+          </button>
+        </form>
+
+        <!-- 3. Popular Hubs / Quick City Selector -->
+        <div class="mt-4 pt-3 border-t border-slate-100">
+          <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Or select a popular city:</div>
+          <div class="grid grid-cols-2 gap-1.5 text-xs">
+            <button onclick="window.selectQuickCity('Bengaluru', 'Karnataka', '560038')" class="p-2 rounded-lg bg-slate-50 hover:bg-amber-50 hover:border-amber-300 border border-slate-200 text-left font-bold text-slate-800 transition flex items-center justify-between">
+              <span>🏙️ Bengaluru</span>
+              <span class="text-[10px] text-slate-400 font-mono">560038</span>
+            </button>
+            <button onclick="window.selectQuickCity('Mumbai', 'Maharashtra', '400001')" class="p-2 rounded-lg bg-slate-50 hover:bg-amber-50 hover:border-amber-300 border border-slate-200 text-left font-bold text-slate-800 transition flex items-center justify-between">
+              <span>🏙️ Mumbai</span>
+              <span class="text-[10px] text-slate-400 font-mono">400001</span>
+            </button>
+            <button onclick="window.selectQuickCity('New Delhi', 'Delhi', '110001')" class="p-2 rounded-lg bg-slate-50 hover:bg-amber-50 hover:border-amber-300 border border-slate-200 text-left font-bold text-slate-800 transition flex items-center justify-between">
+              <span>🏙️ New Delhi</span>
+              <span class="text-[10px] text-slate-400 font-mono">110001</span>
+            </button>
+            <button onclick="window.selectQuickCity('Hyderabad', 'Telangana', '500001')" class="p-2 rounded-lg bg-slate-50 hover:bg-amber-50 hover:border-amber-300 border border-slate-200 text-left font-bold text-slate-800 transition flex items-center justify-between">
+              <span>🏙️ Hyderabad</span>
+              <span class="text-[10px] text-slate-400 font-mono">500001</span>
+            </button>
+            <button onclick="window.selectQuickCity('Chennai', 'Tamil Nadu', '600001')" class="p-2 rounded-lg bg-slate-50 hover:bg-amber-50 hover:border-amber-300 border border-slate-200 text-left font-bold text-slate-800 transition flex items-center justify-between">
+              <span>🏙️ Chennai</span>
+              <span class="text-[10px] text-slate-400 font-mono">600001</span>
+            </button>
+            <button onclick="window.selectQuickCity('Pune', 'Maharashtra', '411001')" class="p-2 rounded-lg bg-slate-50 hover:bg-amber-50 hover:border-amber-300 border border-slate-200 text-left font-bold text-slate-800 transition flex items-center justify-between">
+              <span>🏙️ Pune</span>
+              <span class="text-[10px] text-slate-400 font-mono">411001</span>
+            </button>
+            <button onclick="window.selectQuickCity('Kolkata', 'West Bengal', '700001')" class="p-2 rounded-lg bg-slate-50 hover:bg-amber-50 hover:border-amber-300 border border-slate-200 text-left font-bold text-slate-800 transition flex items-center justify-between">
+              <span>🏙️ Kolkata</span>
+              <span class="text-[10px] text-slate-400 font-mono">700001</span>
+            </button>
+            <button onclick="window.selectQuickCity('Ahmedabad', 'Gujarat', '380001')" class="p-2 rounded-lg bg-slate-50 hover:bg-amber-50 hover:border-amber-300 border border-slate-200 text-left font-bold text-slate-800 transition flex items-center justify-between">
+              <span>🏙️ Ahmedabad</span>
+              <span class="text-[10px] text-slate-400 font-mono">380001</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    modal.classList.add('active');
+  };
+
+  window.detectGpsLocation = function () {
+    const btn = document.getElementById('gps-detect-btn');
+    if (!navigator.geolocation) {
+      showToast('Geolocation is not supported by your browser.', 'warning');
+      return;
+    }
+
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `<span class="animate-spin inline-block">⌛</span> Detecting GPS location...`;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async position => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const geoRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
+          const data = await geoRes.json();
+          const city = data.city || data.locality || data.principalSubdivision || 'India';
+          const stateName = data.principalSubdivision || '';
+          const pincode = data.postcode || '';
+
+          state.userLocation = {
+            city,
+            state: stateName,
+            pincode,
+            country: data.countryName || 'India',
+            lat: latitude,
+            lon: longitude
+          };
+          localStorage.setItem('omnistore_user_location', JSON.stringify(state.userLocation));
+          updateLocationUI();
+          window.closeModals();
+          showToast(`Location detected: ${city} (${pincode || 'GPS'})`, 'success');
+        } catch {
+          showToast('GPS coordinates received, but location lookup timed out.', 'info');
+        } finally {
+          if (btn) btn.disabled = false;
+        }
+      },
+      err => {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<svg class="w-4 h-4 text-[#ff9900]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg><span>Auto-Detect My Exact Location (GPS)</span>`;
+        }
+        showToast(err.code === 1 ? 'Location permission was denied. You can select a city or enter a pincode.' : 'Could not retrieve GPS location.', 'warning');
+      },
+      { timeout: 10000, enableHighAccuracy: true }
+    );
+  };
+
+  window.applyPincodeLocation = async function (e) {
+    if (e) e.preventDefault();
+    const input = document.getElementById('modal-pincode-input');
+    const pin = (input?.value || '').trim();
+    if (!pin || pin.length < 6) {
+      showToast('Please enter a valid 6-digit Indian PIN code.', 'error');
+      return;
+    }
+
+    const btn = document.getElementById('pin-apply-btn');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = 'Verifying...';
+    }
+
+    try {
+      const res = await api(`/api/location/pincode/${pin}`);
+      state.userLocation = {
+        city: res.city || 'India',
+        state: res.state || '',
+        pincode: pin,
+        country: 'India'
+      };
+      localStorage.setItem('omnistore_user_location', JSON.stringify(state.userLocation));
+      updateLocationUI();
+      window.closeModals();
+      showToast(`Delivery location updated to ${res.city} (${pin})!`, 'success');
+    } catch {
+      state.userLocation = { city: 'India', state: '', pincode: pin, country: 'India' };
+      localStorage.setItem('omnistore_user_location', JSON.stringify(state.userLocation));
+      updateLocationUI();
+      window.closeModals();
+      showToast(`PIN Code ${pin} applied!`, 'success');
+    }
+  };
+
+  window.selectQuickCity = function (city, stateName, pincode) {
+    state.userLocation = {
+      city,
+      state: stateName,
+      pincode,
+      country: 'India'
+    };
+    localStorage.setItem('omnistore_user_location', JSON.stringify(state.userLocation));
+    updateLocationUI();
+    window.closeModals();
+    showToast(`Delivery location set to ${city} (${pincode})!`, 'success');
+  };
+
   // --- INITIALIZATION ---
   async function init() {
     setupEventListeners();
+    await initUserLocation();
     await checkAuth();
     await loadCategories();
     await loadProducts();
@@ -1004,8 +1268,8 @@
               <input type="text" id="ship-name" placeholder="Full Name" value="${escapeHtml(state.user.name || '')}" required class="p-2 bg-white border border-slate-200 rounded">
               <input type="text" id="ship-phone" placeholder="Phone Number" value="${escapeHtml(state.user.phone || '+91 98765 43210')}" required class="p-2 bg-white border border-slate-200 rounded">
               <input type="text" id="ship-street" placeholder="Street Address" value="${escapeHtml(state.user.address?.street || '42 MG Road, Indiranagar')}" required class="col-span-2 p-2 bg-white border border-slate-200 rounded">
-              <input type="text" id="ship-city" placeholder="City" value="${escapeHtml(state.user.address?.city || 'Bengaluru')}" required class="p-2 bg-white border border-slate-200 rounded">
-              <input type="text" id="ship-zip" placeholder="PIN Code" value="${escapeHtml(state.user.address?.zip || '560038')}" required class="p-2 bg-white border border-slate-200 rounded">
+              <input type="text" id="ship-city" placeholder="City" value="${escapeHtml(state.user.address?.city || state.userLocation?.city || 'Bengaluru')}" required class="p-2 bg-white border border-slate-200 rounded">
+              <input type="text" id="ship-zip" placeholder="PIN Code" value="${escapeHtml(state.user.address?.zip || state.userLocation?.pincode || '560038')}" required class="p-2 bg-white border border-slate-200 rounded">
             </div>
           </div>
 

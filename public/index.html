@@ -44,9 +44,9 @@
         </span>
       </div>
       <div class="flex items-center gap-4 text-[11px]">
-        <div class="flex items-center gap-1 text-slate-300">
+        <div onclick="window.openLocationModal()" class="flex items-center gap-1 text-slate-300 hover:text-white cursor-pointer transition" title="Change delivery location">
           <svg class="w-3.5 h-3.5 text-[#ff9900]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-          <span>Deliver to <strong class="text-white font-bold">India 560038</strong></span>
+          <span id="top-location-display">Deliver to <strong class="text-white font-bold">Bengaluru 560038</strong></span>
         </div>
       </div>
     </div>
@@ -67,11 +67,14 @@
       </a>
 
       <!-- Location Widget (Desktop) -->
-      <div class="hidden lg:flex items-center gap-1.5 text-xs text-slate-300 hover:outline hover:outline-1 hover:outline-white p-1.5 rounded cursor-pointer">
+      <div onclick="window.openLocationModal()" class="hidden lg:flex items-center gap-1.5 text-xs text-slate-300 hover:outline hover:outline-1 hover:outline-white p-1.5 rounded cursor-pointer transition select-none" title="Change delivery location">
         <svg class="w-4 h-4 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         <div class="leading-tight">
-          <div class="text-[10px] text-slate-400">Delivering to Bengaluru 560038</div>
-          <div class="font-bold text-white">Update location</div>
+          <div id="header-location-title" class="text-[10px] text-slate-400">Delivering to Bengaluru 560038</div>
+          <div class="font-bold text-white flex items-center gap-0.5">
+            <span>Update location</span>
+            <svg class="w-2.5 h-2.5 text-slate-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+          </div>
         </div>
       </div>
 
@@ -160,6 +163,15 @@
           </svg>
         </button>
       </div>
+    </div>
+
+    <!-- Mobile Location Delivery Strip -->
+    <div id="mobile-location-strip" onclick="window.openLocationModal()" class="md:hidden bg-[#1f2833] px-3.5 py-1.5 text-xs text-slate-300 flex items-center justify-between border-t border-slate-700/60 cursor-pointer select-none">
+      <div class="flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5 text-[#ff9900]" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+        <span class="text-slate-300 text-[11px]">Deliver to: <strong id="mobile-location-text" class="text-white font-bold">Bengaluru 560038</strong></span>
+      </div>
+      <span class="text-[#febd69] font-bold text-[11px] flex items-center gap-0.5">Change &rsaquo;</span>
     </div>
 
     <!-- Secondary Amazon Sub-Navigation Bar -->
@@ -756,6 +768,15 @@
   <div id="admin-product-modal" class="modal-overlay">
     <div class="modal-card max-w-lg p-6">
       <div id="admin-product-modal-content">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Choose Delivery Location Modal -->
+  <div id="location-modal" class="modal-overlay">
+    <div class="modal-card max-w-md p-6">
+      <div id="location-modal-content">
         <!-- Injected via JavaScript -->
       </div>
     </div>

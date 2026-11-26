@@ -265,6 +265,99 @@ export default async function handler(req, res) {
         });
       }
 
+      // ==========================================
+      // AUTOMATIC LOCATION DETECTION & LOOKUP
+      // ==========================================
+      if (pathname === '/api/location/detect' && method === 'GET') {
+        // 1. Check Vercel edge geolocation headers (0ms latency in production)
+        const vercelCity = req.headers['x-vercel-ip-city'];
+        const vercelRegion = req.headers['x-vercel-ip-country-region'];
+        const vercelPostal = req.headers['x-vercel-ip-postal-code'];
+        const vercelCountry = req.headers['x-vercel-ip-country'];
+
+        if (vercelCity) {
+          return sendJson(res, 200, {
+            success: true,
+            city: decodeURIComponent(vercelCity),
+            state: vercelRegion ? decodeURIComponent(vercelRegion) : '',
+            pincode: vercelPostal || '',
+            country: vercelCountry || 'IN',
+            source: 'vercel_edge'
+          });
+        }
+
+        // 2. Fallback to IP geolocation lookup
+        try {
+          const rawForwarded = req.headers['x-forwarded-for'];
+          const clientIp = rawForwarded ? rawForwarded.split(',')[0].trim() : '';
+          const isLocal = !clientIp || clientIp === '127.0.0.1' || clientIp === '::1';
+          const lookupUrl = isLocal ? 'https://ipwho.is/' : `https://ipwho.is/${clientIp}`;
+
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 2500);
+          const ipRes = await fetch(lookupUrl, { signal: controller.signal });
+          clearTimeout(timeout);
+
+          const data = await ipRes.json();
+          if (data && data.success !== false && data.city) {
+            return sendJson(res, 200, {
+              success: true,
+              city: data.city,
+              state: data.region || '',
+              pincode: data.postal || '',
+              country: data.country || 'India',
+              source: 'ip_lookup'
+            });
+          }
+        } catch {
+          // ignore error
+        }
+
+        // 3. Default fallback
+        return sendJson(res, 200, {
+          success: true,
+          city: 'Bengaluru',
+          state: 'Karnataka',
+          pincode: '560038',
+          country: 'India',
+          source: 'default'
+        });
+      }
+
+      if (pathname.match(/^\/api\/location\/pincode\/([^/]+)$/) && method === 'GET') {
+        const pin = pathname.split('/')[4].trim();
+        if (!pin || pin.length < 6) {
+          return sendError(res, 400, 'Valid 6-digit PIN code required.');
+        }
+
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 3000);
+          const pinRes = await fetch(`https://api.postalpincode.in/pincode/${pin}`, { signal: controller.signal });
+          clearTimeout(timeout);
+          const pinData = await pinRes.json();
+
+          if (pinData && pinData[0] && pinData[0].Status === 'Success' && pinData[0].PostOffice?.length) {
+            const po = pinData[0].PostOffice[0];
+            return sendJson(res, 200, {
+              success: true,
+              pincode: pin,
+              city: po.District || po.Name || 'India',
+              state: po.State || '',
+              district: po.District || '',
+              area: po.Name || ''
+            });
+          }
+        } catch {}
+
+        return sendJson(res, 200, {
+          success: true,
+          pincode: pin,
+          city: 'India',
+          state: ''
+        });
+      }
+
       // Quick Demo Login
       if (pathname === '/api/auth/demo-login' && method === 'POST') {
         const body = await parseBody(req);
